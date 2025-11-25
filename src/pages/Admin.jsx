@@ -3,24 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import {
   isAdminLoggedIn,
   adminLogout,
-  getProducts,
-  addProduct,
-  updateProduct,
-  deleteProduct
-} from '../utils/products';
+  getPhotos,
+  addPhoto,
+  updatePhoto,
+  deletePhoto
+} from '../utils/photos';
 
 function Admin() {
   const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
+  const [photos, setPhotos] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
+  const [editingPhoto, setEditingPhoto] = useState(null);
   const [formData, setFormData] = useState({
-    name: '',
-    category: 'tee-shirt',
-    price: '',
-    sizes: '',
-    colors: '',
-    stock: '',
+    title: '',
+    category: 'streetwear',
     image: '',
     description: ''
   });
@@ -30,11 +26,11 @@ function Admin() {
       navigate('/admin/login');
       return;
     }
-    loadProducts();
+    loadPhotos();
   }, [navigate]);
 
-  const loadProducts = () => {
-    setProducts(getProducts());
+  const loadPhotos = () => {
+    setPhotos(getPhotos());
   };
 
   const handleLogout = () => {
@@ -45,31 +41,23 @@ function Admin() {
   };
 
   const openAddModal = () => {
-    setEditingProduct(null);
+    setEditingPhoto(null);
     setFormData({
-      name: '',
-      category: 'tee-shirt',
-      price: '',
-      sizes: '',
-      colors: '',
-      stock: '',
+      title: '',
+      category: 'streetwear',
       image: '',
       description: ''
     });
     setShowModal(true);
   };
 
-  const openEditModal = (product) => {
-    setEditingProduct(product);
+  const openEditModal = (photo) => {
+    setEditingPhoto(photo);
     setFormData({
-      name: product.name,
-      category: product.category,
-      price: product.price.toString(),
-      sizes: product.sizes.join(', '),
-      colors: product.colors.join(', '),
-      stock: product.stock.toString(),
-      image: product.image,
-      description: product.description
+      title: photo.title,
+      category: photo.category,
+      image: photo.image,
+      description: photo.description
     });
     setShowModal(true);
   };
@@ -77,36 +65,31 @@ function Admin() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const productData = {
-      name: formData.name.toUpperCase(),
+    const photoData = {
+      title: formData.title.toUpperCase(),
       category: formData.category,
-      price: parseFloat(formData.price),
-      sizes: formData.sizes.split(',').map(s => s.trim()),
-      colors: formData.colors.split(',').map(c => c.trim()),
-      stock: parseInt(formData.stock),
       image: formData.image,
       description: formData.description
     };
 
-    if (editingProduct) {
-      updateProduct(editingProduct.id, productData);
+    if (editingPhoto) {
+      updatePhoto(editingPhoto.id, photoData);
     } else {
-      addProduct(productData);
+      addPhoto(photoData);
     }
 
     setShowModal(false);
-    loadProducts();
+    loadPhotos();
   };
 
-  const handleDelete = (id, name) => {
-    if (window.confirm(`Supprimer le produit "${name}" ?`)) {
-      deleteProduct(id);
-      loadProducts();
+  const handleDelete = (id, title) => {
+    if (window.confirm(`Supprimer la photo "${title}" ?`)) {
+      deletePhoto(id);
+      loadPhotos();
     }
   };
 
-  const categories = new Set(products.map(p => p.category)).size;
-  const totalStock = products.reduce((sum, p) => sum + p.stock, 0);
+  const categories = new Set(photos.map(p => p.category)).size;
 
   return (
     <div className="admin-page">
@@ -122,10 +105,10 @@ function Admin() {
       <div className="container">
         <div className="admin-stats">
           <div className="stat-card">
-            <i className='bx bx-package'></i>
+            <i className='bx bx-image'></i>
             <div>
-              <h3>{products.length}</h3>
-              <p>PRODUITS</p>
+              <h3>{photos.length}</h3>
+              <p>PHOTOS</p>
             </div>
           </div>
           <div className="stat-card">
@@ -136,57 +119,51 @@ function Admin() {
             </div>
           </div>
           <div className="stat-card">
-            <i className='bx bx-box'></i>
+            <i className='bx bx-calendar'></i>
             <div>
-              <h3>{totalStock}</h3>
-              <p>STOCK TOTAL</p>
+              <h3>{new Date().toLocaleDateString('fr-FR')}</h3>
+              <p>DATE</p>
             </div>
           </div>
         </div>
 
         <div className="admin-actions">
-          <h2>GESTION DES PRODUITS</h2>
+          <h2>GESTION DES PHOTOS</h2>
           <button onClick={openAddModal} className="btn btn-primary">
-            <i className='bx bx-plus'></i> AJOUTER UN PRODUIT
+            <i className='bx bx-plus'></i> AJOUTER UNE PHOTO
           </button>
         </div>
 
-        <div className="admin-products">
-          <table className="products-table">
+        <div className="admin-photos">
+          <table className="photos-table">
             <thead>
               <tr>
                 <th>Image</th>
-                <th>Nom</th>
+                <th>Titre</th>
                 <th>Catégorie</th>
-                <th>Prix</th>
-                <th>Stock</th>
+                <th>Date</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {products.map(product => (
-                <tr key={product.id}>
+              {photos.map(photo => (
+                <tr key={photo.id}>
                   <td>
-                    <img src={product.image} alt={product.name} className="table-img" />
+                    <img src={photo.image} alt={photo.title} className="table-img" />
                   </td>
-                  <td>{product.name}</td>
-                  <td><span className="category-badge">{product.category}</span></td>
-                  <td>{product.price.toFixed(2)} €</td>
-                  <td>
-                    <span className={`stock-badge ${product.stock <= 5 ? 'low' : ''}`}>
-                      {product.stock}
-                    </span>
-                  </td>
+                  <td>{photo.title}</td>
+                  <td><span className="category-badge">{photo.category}</span></td>
+                  <td>{new Date(photo.date).toLocaleDateString('fr-FR')}</td>
                   <td>
                     <button
-                      onClick={() => openEditModal(product)}
+                      onClick={() => openEditModal(photo)}
                       className="btn-icon"
                       title="Modifier"
                     >
                       <i className='bx bx-edit'></i>
                     </button>
                     <button
-                      onClick={() => handleDelete(product.id, product.name)}
+                      onClick={() => handleDelete(photo.id, photo.title)}
                       className="btn-icon danger"
                       title="Supprimer"
                     >
@@ -204,84 +181,35 @@ function Admin() {
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>{editingProduct ? 'MODIFIER PRODUIT' : 'NOUVEAU PRODUIT'}</h2>
+              <h2>{editingPhoto ? 'MODIFIER PHOTO' : 'NOUVELLE PHOTO'}</h2>
               <button onClick={() => setShowModal(false)} className="btn-close">
                 <i className='bx bx-x'></i>
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="product-form">
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Nom du produit</label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Catégorie</label>
-                  <select
-                    value={formData.category}
-                    onChange={(e) => setFormData({...formData, category: e.target.value})}
-                    required
-                  >
-                    <option value="tee-shirt">T-shirt</option>
-                    <option value="chemise">Chemise</option>
-                    <option value="pantalon">Pantalon</option>
-                    <option value="casquette">Casquette</option>
-                  </select>
-                </div>
+            <form onSubmit={handleSubmit} className="photo-form">
+              <div className="form-group">
+                <label>Titre de la photo</label>
+                <input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  required
+                />
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Prix (€)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.price}
-                    onChange={(e) => setFormData({...formData, price: e.target.value})}
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Stock</label>
-                  <input
-                    type="number"
-                    value={formData.stock}
-                    onChange={(e) => setFormData({...formData, stock: e.target.value})}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Tailles (séparées par des virgules)</label>
-                  <input
-                    type="text"
-                    value={formData.sizes}
-                    onChange={(e) => setFormData({...formData, sizes: e.target.value})}
-                    placeholder="S, M, L, XL"
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Couleurs (séparées par des virgules)</label>
-                  <input
-                    type="text"
-                    value={formData.colors}
-                    onChange={(e) => setFormData({...formData, colors: e.target.value})}
-                    placeholder="noir, blanc, gris"
-                    required
-                  />
-                </div>
+              <div className="form-group">
+                <label>Catégorie</label>
+                <select
+                  value={formData.category}
+                  onChange={(e) => setFormData({...formData, category: e.target.value})}
+                  required
+                >
+                  <option value="streetwear">Streetwear</option>
+                  <option value="casual">Casual</option>
+                  <option value="elegant">Élégant</option>
+                  <option value="sport">Sport</option>
+                </select>
               </div>
 
               <div className="form-group">
@@ -293,6 +221,11 @@ function Admin() {
                   placeholder="https://..."
                   required
                 />
+                {formData.image && (
+                  <div className="image-preview">
+                    <img src={formData.image} alt="Preview" />
+                  </div>
+                )}
               </div>
 
               <div className="form-group">
@@ -301,7 +234,7 @@ function Admin() {
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   rows="3"
-                  required
+                  placeholder="Description de la photo..."
                 />
               </div>
 
@@ -310,7 +243,7 @@ function Admin() {
                   Annuler
                 </button>
                 <button type="submit" className="btn btn-primary">
-                  {editingProduct ? 'Modifier' : 'Ajouter'}
+                  {editingPhoto ? 'Modifier' : 'Ajouter'}
                 </button>
               </div>
             </form>

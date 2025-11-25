@@ -1,10 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { adminLogin, isAdminLoggedIn } from '../utils/products';
-import { useEffect } from 'react';
+import { adminLogin, isAdminLoggedIn } from '../utils/photos';
 
 function LoginAdmin() {
-  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -19,10 +17,10 @@ function LoginAdmin() {
     e.preventDefault();
     setError('');
 
-    if (adminLogin(username, password)) {
+    if (adminLogin(password)) {
       navigate('/admin/dashboard');
     } else {
-      setError('Nom d\'utilisateur ou mot de passe incorrect');
+      setError('Mot de passe incorrect');
       setPassword('');
     }
   };
@@ -47,21 +45,6 @@ function LoginAdmin() {
 
             <div className="form-group">
               <label>
-                <i className='bx bx-user'></i>
-                NOM D'UTILISATEUR
-              </label>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Entrez votre nom d'utilisateur"
-                required
-                autoFocus
-              />
-            </div>
-
-            <div className="form-group">
-              <label>
                 <i className='bx bx-lock'></i>
                 MOT DE PASSE
               </label>
@@ -71,7 +54,11 @@ function LoginAdmin() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Entrez votre mot de passe"
                 required
+                autoFocus
               />
+              <p style={{fontSize: '12px', marginTop: '8px', color: '#999'}}>
+                Mot de passe par défaut: admin123
+              </p>
             </div>
 
             <button type="submit" className="btn btn-primary btn-block">

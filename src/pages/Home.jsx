@@ -1,21 +1,20 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getProducts } from '../utils/products';
-import ProductCard from '../components/ProductCard';
+import { getPhotos } from '../utils/photos';
+import PhotoCard from '../components/PhotoCard';
 
 function Home() {
-  const [products, setProducts] = useState([]);
-  const [stats, setStats] = useState({ products: 0, categories: 0, customers: 0 });
+  const [photos, setPhotos] = useState([]);
+  const [stats, setStats] = useState({ photos: 0, categories: 0 });
 
   useEffect(() => {
-    const allProducts = getProducts();
-    setProducts(allProducts);
+    const allPhotos = getPhotos();
+    setPhotos(allPhotos);
     
-    const categories = new Set(allProducts.map(p => p.category)).size;
+    const categories = new Set(allPhotos.map(p => p.category)).size;
     setStats({
-      products: allProducts.length,
-      categories: categories,
-      customers: 1250
+      photos: allPhotos.length,
+      categories: categories
     });
   }, []);
 
@@ -36,15 +35,14 @@ function Home() {
 
     const counters = document.querySelectorAll('.stat-number');
     counters.forEach((counter, index) => {
-      const targets = [stats.products, stats.categories, stats.customers];
-      if (targets[index]) {
+      const targets = [stats.photos, stats.categories];
+      if (targets[index] !== undefined) {
         animateCounter(counter, targets[index]);
       }
     });
   }, [stats]);
 
-  const newProducts = products.slice(0, 4);
-  const bestsellers = products.slice(4, 8);
+  const recentPhotos = photos.slice(0, 6);
 
   return (
     <div className="home">
@@ -52,7 +50,7 @@ function Home() {
         <div className="hero-content">
           <h1 className="hero-title">STYLE URBAIN</h1>
           <p className="hero-subtitle">Collection 2025</p>
-          <Link to="/shop" className="btn btn-primary">DÉCOUVRIR</Link>
+          <Link to="/gallery" className="btn btn-primary">DÉCOUVRIR</Link>
         </div>
       </section>
 
@@ -60,9 +58,9 @@ function Home() {
         <div className="container">
           <div className="stats-grid">
             <div className="stat-item">
-              <i className='bx bx-package'></i>
+              <i className='bx bx-image'></i>
               <span className="stat-number">0</span>
-              <p>PRODUITS</p>
+              <p>PHOTOS</p>
             </div>
             <div className="stat-item">
               <i className='bx bx-grid-alt'></i>
@@ -71,8 +69,8 @@ function Home() {
             </div>
             <div className="stat-item">
               <i className='bx bx-user'></i>
-              <span className="stat-number">0</span>
-              <p>CLIENTS</p>
+              <span className="stat-number">16</span>
+              <p>BIG SIXTEEN</p>
             </div>
           </div>
         </div>
@@ -82,29 +80,29 @@ function Home() {
         <div className="container">
           <h2 className="section-title">CATÉGORIES</h2>
           <div className="categories-grid">
-            <Link to="/shop?category=tee-shirt" className="category-card">
+            <Link to="/gallery?category=streetwear" className="category-card">
               <div className="category-icon">
                 <i className='bx bx-shopping-bag'></i>
               </div>
-              <h3>T-SHIRTS</h3>
+              <h3>STREETWEAR</h3>
             </Link>
-            <Link to="/shop?category=chemise" className="category-card">
+            <Link to="/gallery?category=casual" className="category-card">
+              <div className="category-icon">
+                <i className='bx bx-coffee'></i>
+              </div>
+              <h3>CASUAL</h3>
+            </Link>
+            <Link to="/gallery?category=elegant" className="category-card">
               <div className="category-icon">
                 <i className='bx bx-briefcase'></i>
               </div>
-              <h3>CHEMISES</h3>
+              <h3>ÉLÉGANT</h3>
             </Link>
-            <Link to="/shop?category=pantalon" className="category-card">
+            <Link to="/gallery?category=sport" className="category-card">
               <div className="category-icon">
-                <i className='bx bx-closet'></i>
+                <i className='bx bx-run'></i>
               </div>
-              <h3>PANTALONS</h3>
-            </Link>
-            <Link to="/shop?category=casquette" className="category-card">
-              <div className="category-icon">
-                <i className='bx bx-happy-beaming'></i>
-              </div>
-              <h3>CASQUETTES</h3>
+              <h3>SPORT</h3>
             </Link>
           </div>
         </div>
@@ -112,25 +110,14 @@ function Home() {
 
       <section className="products-section">
         <div className="container">
-          <h2 className="section-title">NOUVEAUTÉS</h2>
-          <div className="products-grid">
-            {newProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="products-section bg-light">
-        <div className="container">
-          <h2 className="section-title">BESTSELLERS</h2>
-          <div className="products-grid">
-            {bestsellers.map(product => (
-              <ProductCard key={product.id} product={product} />
+          <h2 className="section-title">PHOTOS RÉCENTES</h2>
+          <div className="photos-grid-home">
+            {recentPhotos.map(photo => (
+              <PhotoCard key={photo.id} photo={photo} />
             ))}
           </div>
           <div className="text-center mt-4">
-            <Link to="/shop" className="btn btn-secondary">VOIR TOUT</Link>
+            <Link to="/gallery" className="btn btn-secondary">VOIR TOUT</Link>
           </div>
         </div>
       </section>
@@ -138,15 +125,13 @@ function Home() {
       <section className="newsletter">
         <div className="container">
           <div className="newsletter-content">
-            <h2>NEWSLETTER</h2>
-            <p>Inscrivez-vous pour recevoir nos offres exclusives</p>
-            <form className="newsletter-form" onSubmit={(e) => {
-              e.preventDefault();
-              alert('Merci pour votre inscription !');
-            }}>
-              <input type="email" placeholder="Votre email" required />
-              <button type="submit" className="btn btn-primary">S'INSCRIRE</button>
-            </form>
+            <h2>SUIVEZ-NOUS</h2>
+            <p>Restez connecté pour voir nos derniers styles</p>
+            <div className="social-links">
+              <a href="#" className="social-icon"><i className='bx bxl-instagram'></i></a>
+              <a href="#" className="social-icon"><i className='bx bxl-facebook'></i></a>
+              <a href="#" className="social-icon"><i className='bx bxl-twitter'></i></a>
+            </div>
           </div>
         </div>
       </section>
