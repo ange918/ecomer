@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { adminLogin, isAdminLoggedIn } from '../utils/photos';
+import { adminLogin, isAdminLoggedIn } from '../utils/products';
 
 function LoginAdmin() {
   const [password, setPassword] = useState('');
