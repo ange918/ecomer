@@ -17,6 +17,7 @@ Site e-commerce moderne pour vendre des vêtements (pantalons, chemises, t-shirt
   - Design noir/blanc/gris avec police Montserrat
   - Responsive et animations
   - Correction du bug du badge du panier (événements personnalisés)
+  - **Expansion du catalogue de 8 à 30 produits avec prix affichés**
 
 ## Architecture du projet
 
@@ -36,7 +37,7 @@ Site e-commerce moderne pour vendre des vêtements (pantalons, chemises, t-shirt
 │   ├── components/      # Composants réutilisables
 │   │   ├── Header.jsx   # Navigation avec badge panier réactif
 │   │   ├── Footer.jsx   # Pied de page
-│   │   └── ProductCard.jsx  # Carte produit
+│   │   └── ProductCard.jsx  # Carte produit avec prix
 │   ├── pages/           # Pages de l'application
 │   │   ├── Home.jsx     # Page d'accueil avec hero, stats, catégories
 │   │   ├── Shop.jsx     # Boutique avec filtres et recherche
@@ -81,6 +82,7 @@ Site e-commerce moderne pour vendre des vêtements (pantalons, chemises, t-shirt
 - **Pagination:** 8 produits par page
 - **Responsive:** Mobile, tablette et desktop
 - **Animations:** Transitions au survol, compteurs animés, effets visuels
+- **Prix affichés:** Tous les produits affichent leur prix sous le nom
 
 ## Design
 
@@ -97,7 +99,7 @@ Site e-commerce moderne pour vendre des vêtements (pantalons, chemises, t-shirt
 
 ### Composants UI
 - Boutons primaires/secondaires
-- Cartes produits avec effets hover
+- Cartes produits avec effets hover et prix visibles
 - Formulaires stylisés
 - Badges de statut (stock, nouveau)
 - Modales (dashboard admin)
@@ -106,16 +108,28 @@ Site e-commerce moderne pour vendre des vêtements (pantalons, chemises, t-shirt
 ## Données
 
 ### Produits par défaut (localStorage)
-8 produits initiaux répartis dans 4 catégories:
-- 2 T-shirts
-- 2 Chemises
-- 2 Pantalons
-- 2 Casquettes
+**30 produits** répartis dans 4 catégories:
+- **8 T-shirts** (29,99€ - 42,99€)
+  - T-shirt classique noir, oversize blanc, graphique street, vintage logo, pocket tee, rayé marinière, henley col boutonné, longline asymétrique
+- **8 Chemises** (54,99€ - 84,99€)
+  - Oxford blanche, en jean, flanelle à carreaux, lin naturel, cubaine imprimée, workwear épaisse, satin brillante, utilitaire multi-poches
+- **7 Pantalons** (54,99€ - 89,99€)
+  - Cargo noir, chino beige, jogging urbain, jean slim noir, tech sportif, large streetwear, velours côtelé
+- **7 Casquettes** (24,99€ - 36,99€)
+  - Streetwear, dad hat, trucker mesh, baseball vintage, bucket hat, 5 panel camp, gavroche plate
+
+### Gamme de prix
+- Prix minimum: 24,99€ (Casquette Streetwear)
+- Prix maximum: 89,99€ (Pantalon Velours Côtelé)
+- Prix moyen: ~55€
 
 ### Gestion du stockage
-- **bigsixteen_products:** Liste des produits
+- **bigsixteen_products:** Liste des produits (30 items)
 - **bigsixteen_cart:** Panier utilisateur
 - **bigsixteen_admin:** État de connexion admin
+
+### Note importante
+Si vous ne voyez que 8 produits au lieu de 30, effacez le localStorage de votre navigateur (F12 > Application/Stockage > Local Storage > Supprimer bigsixteen_products) puis rechargez la page. Les 30 nouveaux produits se chargeront automatiquement.
 
 ## Développement
 
@@ -148,3 +162,4 @@ Configuré pour Autoscale deployment:
 - Compatible tous navigateurs modernes
 - Optimisé pour les performances
 - Code organisé et commenté
+- Prix affichés sur toutes les cartes produits (ProductCard.jsx ligne 22)
