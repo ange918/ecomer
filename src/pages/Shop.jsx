@@ -1,24 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getProducts } from '../utils/products';
 import ProductCard from '../components/ProductCard';
 
 function Shop() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [products] = useState(() => getProducts());
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
   const [priceRange, setPriceRange] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 8;
 
-  useEffect(() => {
-    const allProducts = getProducts();
-    setProducts(allProducts);
-  }, []);
-
-  useEffect(() => {
+  const filteredProducts = useMemo(() => {
     let filtered = [...products];
 
     if (selectedCategory !== 'all') {
@@ -26,7 +20,7 @@ function Shop() {
     }
 
     if (searchTerm) {
-      filtered = filtered.filter(p => 
+      filtered = filtered.filter(p =>
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -46,9 +40,16 @@ function Shop() {
       }
     }
 
-    setFilteredProducts(filtered);
-    setCurrentPage(1);
+    return filtered;
   }, [products, selectedCategory, searchTerm, priceRange]);
+
+  // Revenir à la première page dès qu'un filtre change, sans effet.
+  const filterKey = `${selectedCategory}|${searchTerm}|${priceRange}`;
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
+  if (filterKey !== prevFilterKey) {
+    setPrevFilterKey(filterKey);
+    setCurrentPage(1);
+  }
 
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;

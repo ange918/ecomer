@@ -2,19 +2,18 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { getCart } from '../utils/products';
 
+const countCartItems = () =>
+  getCart().reduce((sum, item) => sum + item.quantity, 0);
+
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
+  const [cartCount, setCartCount] = useState(countCartItems);
 
   const updateCartCount = () => {
-    const cart = getCart();
-    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-    setCartCount(count);
+    setCartCount(countCartItems());
   };
 
   useEffect(() => {
-    updateCartCount();
-
     const handleStorageChange = (e) => {
       if (e.key === 'bigsixteen_cart' || e.type === 'cartUpdated') {
         updateCartCount();

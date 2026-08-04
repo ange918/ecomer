@@ -1,22 +1,15 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getPhotos } from '../utils/photos';
 import PhotoCard from '../components/PhotoCard';
 
 function Home() {
-  const [photos, setPhotos] = useState([]);
-  const [stats, setStats] = useState({ photos: 0, categories: 0 });
+  const [photos] = useState(() => getPhotos());
 
-  useEffect(() => {
-    const allPhotos = getPhotos();
-    setPhotos(allPhotos);
-    
-    const categories = new Set(allPhotos.map(p => p.category)).size;
-    setStats({
-      photos: allPhotos.length,
-      categories: categories
-    });
-  }, []);
+  const stats = useMemo(() => ({
+    photos: photos.length,
+    categories: new Set(photos.map(p => p.category)).size
+  }), [photos]);
 
   useEffect(() => {
     const animateCounter = (element, target, duration = 2000) => {

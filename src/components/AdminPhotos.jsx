@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   getPhotos,
   addPhoto,
@@ -7,7 +7,7 @@ import {
 } from '../utils/photos';
 
 function AdminPhotos() {
-  const [photos, setPhotos] = useState([]);
+  const [photos, setPhotos] = useState(() => getPhotos());
   const [showModal, setShowModal] = useState(false);
   const [editingPhoto, setEditingPhoto] = useState(null);
   const [formData, setFormData] = useState({
@@ -16,10 +16,6 @@ function AdminPhotos() {
     image: '',
     description: ''
   });
-
-  useEffect(() => {
-    loadPhotos();
-  }, []);
 
   const loadPhotos = () => {
     setPhotos(getPhotos());

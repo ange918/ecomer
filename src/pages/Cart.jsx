@@ -1,13 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getCart, updateCartItem, removeFromCart, clearCart } from '../utils/products';
 
 function Cart() {
-  const [cart, setCart] = useState([]);
-
-  useEffect(() => {
-    loadCart();
-  }, []);
+  const [cart, setCart] = useState(() => getCart());
 
   const loadCart = () => {
     setCart(getCart());

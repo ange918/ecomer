@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   getProducts,
   addProduct,
@@ -7,7 +7,7 @@ import {
 } from '../utils/products';
 
 function AdminProducts() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(() => getProducts());
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [formData, setFormData] = useState({
@@ -20,10 +20,6 @@ function AdminProducts() {
     image: '',
     description: ''
   });
-
-  useEffect(() => {
-    loadProducts();
-  }, []);
 
   const loadProducts = () => {
     setProducts(getProducts());

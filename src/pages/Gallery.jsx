@@ -1,31 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getPhotos } from '../utils/photos';
 import PhotoCard from '../components/PhotoCard';
 
 function Gallery() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [photos, setPhotos] = useState([]);
-  const [filteredPhotos, setFilteredPhotos] = useState([]);
+  const [photos] = useState(() => getPhotos());
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
   const [currentPage, setCurrentPage] = useState(1);
   const photosPerPage = 12;
 
-  useEffect(() => {
-    const allPhotos = getPhotos();
-    setPhotos(allPhotos);
-  }, []);
-
-  useEffect(() => {
-    let filtered = [...photos];
-
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(p => p.category === selectedCategory);
-    }
-
-    setFilteredPhotos(filtered);
-    setCurrentPage(1);
+  const filteredPhotos = useMemo(() => {
+    if (selectedCategory === 'all') return photos;
+    return photos.filter(p => p.category === selectedCategory);
   }, [photos, selectedCategory]);
+
+  // Revenir à la première page dès que la catégorie change, sans effet.
+  const [prevCategory, setPrevCategory] = useState(selectedCategory);
+  if (selectedCategory !== prevCategory) {
+    setPrevCategory(selectedCategory);
+    setCurrentPage(1);
+  }
 
   const indexOfLastPhoto = currentPage * photosPerPage;
   const indexOfFirstPhoto = indexOfLastPhoto - photosPerPage;

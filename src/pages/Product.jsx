@@ -1,26 +1,31 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getProductById, addToCart } from '../utils/products';
 
 function Product() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [product, setProduct] = useState(null);
-  const [selectedSize, setSelectedSize] = useState('');
-  const [selectedColor, setSelectedColor] = useState('');
+  const product = useMemo(() => getProductById(id), [id]);
+  const [selectedSize, setSelectedSize] = useState(() => product?.sizes[0] ?? '');
+  const [selectedColor, setSelectedColor] = useState(() => product?.colors[0] ?? '');
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
 
+  // Réinitialiser la sélection quand on passe d'un produit à un autre, sans effet.
+  const [prevId, setPrevId] = useState(id);
+  if (id !== prevId) {
+    setPrevId(id);
+    setSelectedSize(product?.sizes[0] ?? '');
+    setSelectedColor(product?.colors[0] ?? '');
+    setQuantity(1);
+  }
+
+  // Rediriger si le produit n'existe pas (effet = navigation, pas de setState).
   useEffect(() => {
-    const foundProduct = getProductById(id);
-    if (!foundProduct) {
+    if (!product) {
       navigate('/shop');
-      return;
     }
-    setProduct(foundProduct);
-    setSelectedSize(foundProduct.sizes[0]);
-    setSelectedColor(foundProduct.colors[0]);
-  }, [id, navigate]);
+  }, [product, navigate]);
 
   const handleAddToCart = () => {
     if (!selectedSize || !selectedColor) {
