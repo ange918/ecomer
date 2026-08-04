@@ -1,26 +1,25 @@
-# BIGSIXTEEN
+# GazExpress — App Client (MVP)
 
-Boutique e-commerce **et** galerie de photos, dans une seule application React.
-Design minimaliste noir / blanc / gris, entièrement en français.
+Prototype **front-end** de l'application Client de **GazExpress**, un service de livraison
+à domicile de gaz domestique (modèle *on-demand delivery*).
 
-> Application front-end : aucune base de données ni backend. Les produits, le panier,
-> les photos et l'authentification admin sont stockés dans le `localStorage` du navigateur.
+> **MVP mocké** : cette version ne couvre que l'interface **Client** décrite au §3.1 du
+> cahier des charges. Il n'y a **pas de backend** — toutes les données (session, adresses,
+> commandes) sont persistées dans le `localStorage` du navigateur. L'OTP, le paiement
+> Mobile Money et le suivi cartographique sont **simulés**.
 
 ## Stack
 
-- **React 19** + **Vite 7**
-- **React Router DOM 7** pour le routing
-- **Boxicons** (icônes) et **Montserrat** (police) chargés via CDN
+- **React 19** + **Vite 7**, **React Router 7**
+- **Boxicons** + **Montserrat** via CDN
 - **ESLint 9** (flat config)
 
 ## Démarrage
 
 ```bash
 npm install
-npm run dev      # serveur de développement (http://localhost:5000)
+npm run dev      # http://localhost:5000
 ```
-
-### Scripts
 
 | Commande          | Description                          |
 | ----------------- | ------------------------------------ |
@@ -29,32 +28,34 @@ npm run dev      # serveur de développement (http://localhost:5000)
 | `npm run preview` | Prévisualisation du build            |
 | `npm run lint`    | Analyse ESLint                       |
 
+## Fonctionnalités (parcours Client)
+
+1. **Connexion** — téléphone/email + code OTP (le code est affiché à l'écran pour la démo).
+2. **Accueil** — commande en cours, raccourci « Commander », dernières recharges.
+3. **Commander** — assistant en 4 étapes : marque (Oryx, Puma, TotalEnergies, Sodigaz) et
+   contenance (6 / 12,5 kg), type d'opération (échange vs achat neuf), adresse (avec
+   géolocalisation du navigateur), mode de paiement (espèces / MTN MoMo / Moov / Wave),
+   récapitulatif avec frais de livraison calculés selon la distance.
+4. **Suivi** — carte simulée avec livreur qui se rapproche, frise de statut
+   (`en attente → acceptée → en route → livrée`), puis notation.
+5. **Historique** — commandes passées + « Recommander ».
+6. **Profil** — nom, gestion des adresses, déconnexion.
+7. **Support** — contacts (appel / WhatsApp) et FAQ.
+
 ## Structure
 
 ```
 src/
-├── components/     # Header, Footer, ProductCard, PhotoCard, AdminProducts, AdminPhotos
-├── pages/          # Home, Shop, Product, Cart, Gallery, About, Contact, LoginAdmin, Admin
-├── utils/
-│   ├── products.js # Produits, panier et authentification admin (localStorage)
-│   └── photos.js   # Photos (localStorage)
-├── App.jsx         # Routing principal
-├── main.jsx        # Point d'entrée
-└── styles.css      # Styles globaux
+├── components/   AppNav, RequireAuth, OrderStatusStepper, LiveMap
+├── pages/        Login, Home, NewOrder, Tracking, History, Profile, Support
+├── utils/        storage, auth, catalog, geo, orders  (couche données localStorage)
+├── App.jsx       routing + garde d'authentification
+├── main.jsx      point d'entrée
+└── styles.css    styles globaux (mobile-first)
 ```
 
-## Fonctionnalités
+## Hors périmètre (à intégrer ultérieurement)
 
-- **Boutique** : catalogue avec filtres (recherche, catégorie, prix), pagination,
-  page produit (tailles, couleurs, stock) et panier avec badge dynamique.
-- **Galerie** : grille de photos filtrable par style (streetwear, casual, élégant, sport)
-  avec pagination.
-- **Dashboard admin** : CRUD complet des produits et des photos, réparti en deux onglets.
-
-## Accès admin
-
-- URL : `/admin/login`
-- Mot de passe par défaut : `admin123` (modifiable dans `src/utils/products.js`)
-
-Le mot de passe est vérifié côté client : cet espace admin protège une démo, pas des
-données sensibles.
+App Livreur/Dépôt, back-office Admin, vraie intégration Mobile Money et passerelle OTP,
+API cartographique/itinéraire réelle, notifications push serveur, conformité réglementaire
+du transport de gaz.
