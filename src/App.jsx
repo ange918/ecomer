@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import RequireAuth from './components/RequireAuth';
 import AppNav from './components/AppNav';
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import NewOrder from './pages/NewOrder';
@@ -28,9 +29,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route element={<AppLayout />}>
-          <Route path="/" element={<Home />} />
+          <Route path="/app" element={<Home />} />
           <Route path="/commander" element={<NewOrder />} />
           <Route path="/suivi/:id" element={<Tracking />} />
           <Route path="/historique" element={<History />} />

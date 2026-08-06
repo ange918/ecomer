@@ -2,7 +2,7 @@ import { Link, NavLink } from 'react-router-dom';
 
 // En-tête + barre d'onglets basse (navigation mobile-first).
 const TABS = [
-  { to: '/', icon: 'bx-home-alt', label: 'Accueil', end: true },
+  { to: '/app', icon: 'bx-home-alt', label: 'Accueil', end: true },
   { to: '/commander', icon: 'bx-plus-circle', label: 'Commander' },
   { to: '/historique', icon: 'bx-time-five', label: 'Historique' },
   { to: '/profil', icon: 'bx-user', label: 'Profil' },
@@ -12,7 +12,7 @@ function AppNav() {
   return (
     <>
       <header className="app-header">
-        <Link to="/" className="brand">
+        <Link to="/app" className="brand">
           <i className="bx bxs-flame"></i>
           <span>GazExpress</span>
         </Link>

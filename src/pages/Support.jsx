@@ -55,7 +55,7 @@ function Support() {
         </div>
       </section>
 
-      <Link to="/" className="btn btn-ghost btn-block">
+      <Link to="/app" className="btn btn-ghost btn-block">
         Retour à l'accueil
       </Link>
     </div>

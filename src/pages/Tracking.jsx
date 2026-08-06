@@ -38,7 +38,7 @@ function Tracking() {
 
   // Rediriger si la commande n'existe pas (navigation, pas de setState).
   useEffect(() => {
-    if (!order) navigate('/', { replace: true });
+    if (!order) navigate('/app', { replace: true });
   }, [order, navigate]);
 
   // Animation de la progression tant que la commande n'est pas livrée.
@@ -116,7 +116,7 @@ function Tracking() {
             ))}
           </div>
           {rating > 0 && <p className="rating-thanks">Merci pour votre retour !</p>}
-          <Link to="/" className="btn btn-primary btn-block">
+          <Link to="/app" className="btn btn-primary btn-block">
             Retour à l'accueil
           </Link>
         </div>

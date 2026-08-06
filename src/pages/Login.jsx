@@ -26,7 +26,7 @@ function Login() {
   const handleVerify = (e) => {
     e.preventDefault();
     if (verifyOtp(code)) {
-      navigate('/', { replace: true });
+      navigate('/app', { replace: true });
     } else {
       setError('Code incorrect. Réessayez.');
     }
