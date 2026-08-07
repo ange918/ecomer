@@ -1,22 +1,45 @@
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+import oryx from '../assets/products/oryx.png';
+import progaz from '../assets/products/progaz.png';
+import progazHaut from '../assets/products/progaz-haut.png';
+import beninPetro from '../assets/products/benin-petro.png';
+import oryxFamille from '../assets/products/oryx-famille.png';
+import raccord from '../assets/products/raccord.png';
+import rechaud from '../assets/products/rechaud.png';
+import supportBruleur from '../assets/products/support-bruleur.png';
+
+gsap.registerPlugin(ScrollTrigger);
 
 // Landing page publique — thème sombre + accent vert lime (style OpeN9).
 // GazExpress : marché hyperlocal de livraison de gaz à domicile.
-// Les cartes du hero et la grille « Recharges populaires » accueillent les photos
-// de gaz : tant qu'aucune image n'est fournie, un emplacement (placeholder) s'affiche.
 
-// image: null → placeholder (à remplacer par le chemin de la photo une fois fournie).
 const HERO_CARDS = [
-  { brand: 'Oryx', kg: '6 kg', price: '4 000 FCFA', vendor: 'Dépôt Cocody', eta: '≈ 30 min', image: null },
-  { brand: 'Puma', kg: '12,5 kg', price: '7 300 FCFA', vendor: 'Gaz Express Yop', eta: '≈ 25 min', image: null },
-  { brand: 'TotalEnergies', kg: '6 kg', price: '4 200 FCFA', vendor: 'Station Plateau', eta: '≈ 35 min', image: null },
+  { brand: 'Oryx', kg: '6 kg', price: '4 000 FCFA', vendor: 'Dépôt Cocody', eta: '≈ 30 min', image: oryx },
+  { brand: 'Progaz', kg: '6 kg', price: '3 900 FCFA', vendor: 'Gaz Express Yop', eta: '≈ 25 min', image: progaz },
+  { brand: 'Benin Petro', kg: '12,5 kg', price: '7 200 FCFA', vendor: 'Station Plateau', eta: '≈ 35 min', image: beninPetro },
 ];
 
 const POPULAR = [
-  { brand: 'Oryx', kg: '6 kg', price: '4 000 FCFA', type: 'Échange', image: null },
-  { brand: 'Sodigaz', kg: '12,5 kg', price: '7 200 FCFA', type: 'Échange', image: null },
-  { brand: 'Puma', kg: '6 kg', price: '21 500 FCFA', type: 'Neuve', image: null },
-  { brand: 'TotalEnergies', kg: '12,5 kg', price: '7 800 FCFA', type: 'Échange', image: null },
+  { brand: 'Oryx', kg: '6 kg', price: '4 000 FCFA', type: 'Échange', image: oryx },
+  { brand: 'Progaz', kg: '12,5 kg', price: '7 300 FCFA', type: 'Échange', image: progazHaut },
+  { brand: 'Benin Petro', kg: '6 kg', price: '3 800 FCFA', type: 'Échange', image: beninPetro },
+  { brand: 'Progaz', kg: '6 kg', price: '21 000 FCFA', type: 'Neuve', image: progaz },
+];
+
+const ACCESSORIES = [
+  { name: 'Raccord en T', desc: 'Laiton, robuste', image: raccord },
+  { name: 'Pare-vent réchaud', desc: 'Inox, économie de gaz', image: rechaud },
+  { name: 'Support brûleur', desc: 'Inox, stable', image: supportBruleur },
+];
+
+const BRANDS = [
+  { name: 'Oryx', color: '#E4002B' },
+  { name: 'Progaz', color: '#7B2A9E' },
+  { name: 'Benin Petro', color: '#2F9E44' },
 ];
 
 const STEPS = [
@@ -35,15 +58,6 @@ const FEATURES = [
   { icon: 'bx-refresh', title: 'Échange simplifié', text: 'Bouteille vide reprise contre une pleine, sans effort.' },
 ];
 
-const BRANDS = [
-  { name: 'Oryx', color: '#0B5FFF' },
-  { name: 'Puma', color: '#E4002B' },
-  { name: 'TotalEnergies', color: '#ED0000' },
-  { name: 'Sodigaz', color: '#009640' },
-];
-
-const ACCESSORIES = ['Détendeurs', 'Tuyaux', 'Réchauds', 'Brûleurs', 'Raccords'];
-
 const TESTIMONIALS = [
   { name: 'Aïcha K.', role: 'Cliente, Cocody', text: 'Panne de gaz un dimanche soir : commande passée, livrée en 30 min. Un vrai soulagement !' },
   { name: 'Moussa D.', role: 'Vendeur partenaire', text: 'GazExpress m’amène des clients que je n’aurais jamais touchés. Mes ventes ont augmenté.' },
@@ -57,26 +71,11 @@ const FAQ = [
   { q: 'Je tiens une boutique de gaz, comment vendre sur GazExpress ?', a: 'Cliquez sur « Devenir vendeur » : vous recevez les commandes des clients proches et développez vos ventes.' },
 ];
 
-// Visuel de remplacement quand aucune photo n'est encore fournie.
-function BottlePlaceholder() {
-  return (
-    <div className="ph-media" aria-hidden="true">
-      <svg viewBox="0 0 80 120" className="ph-bottle">
-        <rect x="33" y="0" width="14" height="16" rx="4" fill="#c6f135" />
-        <rect x="14" y="14" width="52" height="104" rx="22" fill="#26262b" stroke="#3a3a42" />
-        <rect x="14" y="46" width="52" height="20" fill="#c6f135" opacity="0.85" />
-        <text x="40" y="61" textAnchor="middle" fontSize="11" fontWeight="800" fill="#0a0a0b">GAZ</text>
-      </svg>
-      <span className="ph-label"><i className="bx bx-image-add"></i> Photo à venir</span>
-    </div>
-  );
-}
-
 function HeroCard({ card, center }) {
   return (
     <article className={`hero-card ${center ? 'is-center' : ''}`}>
       <div className="hero-card-media">
-        {card.image ? <img src={card.image} alt={`${card.brand} ${card.kg}`} /> : <BottlePlaceholder />}
+        <img src={card.image} alt={`${card.brand} ${card.kg}`} />
         <span className="hero-card-eta"><i className="bx bx-time-five"></i> {card.eta}</span>
         <button type="button" className="hero-card-heart" aria-label="Favori"><i className="bx bx-heart"></i></button>
         {center && <span className="hero-card-cta">Commander</span>}
@@ -96,14 +95,14 @@ function ProductCard({ item }) {
   return (
     <article className="product-card">
       <div className="product-media">
-        {item.image ? <img src={item.image} alt={`${item.brand} ${item.kg}`} /> : <BottlePlaceholder />}
+        <img src={item.image} alt={`${item.brand} ${item.kg}`} />
         <span className="product-tag">{item.type}</span>
       </div>
       <div className="product-body">
         <strong>{item.brand} · {item.kg}</strong>
         <div className="product-foot">
           <span className="product-price">{item.price}</span>
-          <Link to="/login" className="product-buy"><i className="bx bx-plus"></i></Link>
+          <Link to="/login" className="product-buy" aria-label="Commander"><i className="bx bx-plus"></i></Link>
         </div>
       </div>
     </article>
@@ -111,8 +110,42 @@ function ProductCard({ item }) {
 }
 
 function Landing() {
+  const rootRef = useRef(null);
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const ctx = gsap.context(() => {
+      gsap.from('.lp-anim-hero > *', {
+        y: 26,
+        opacity: 0,
+        duration: 0.7,
+        stagger: 0.12,
+        ease: 'power3.out',
+      });
+      gsap.from('.hero-carousel', {
+        y: 34,
+        opacity: 0,
+        duration: 0.8,
+        delay: 0.35,
+        ease: 'power3.out',
+      });
+      gsap.utils.toArray('.lp-reveal').forEach((el) => {
+        gsap.from(el, {
+          y: 42,
+          opacity: 0,
+          duration: 0.7,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: el, start: 'top 85%' },
+        });
+      });
+    }, rootRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <div className="landing">
+    <div className="landing" ref={rootRef}>
       {/* Navigation */}
       <header className="lp-nav">
         <div className="lp-container lp-nav-inner">
@@ -143,7 +176,7 @@ function Landing() {
         <span className="lp-spark lp-spark-2" aria-hidden="true">◆</span>
         <span className="lp-spark lp-spark-3" aria-hidden="true">✦</span>
 
-        <div className="lp-container lp-hero-inner">
+        <div className="lp-container lp-hero-inner lp-anim-hero">
           <span className="lp-badge"><i className="bx bx-bolt-circle"></i> Livraison de gaz à la demande</span>
           <h1>Votre gaz livré<br /><span className="lp-accent">à domicile</span></h1>
           <p className="lp-hero-sub">
@@ -172,7 +205,7 @@ function Landing() {
 
       {/* Recharges populaires */}
       <section className="lp-section" id="popular">
-        <div className="lp-container">
+        <div className="lp-container lp-reveal">
           <div className="lp-section-head lp-head-row">
             <div>
               <span className="lp-eyebrow">Sélection</span>
@@ -190,23 +223,23 @@ function Landing() {
 
       {/* Problème → Solution */}
       <section className="lp-section">
-        <div className="lp-container lp-two-col">
-          <div className="lp-card lp-problem-card">
-            <span className="lp-eyebrow lp-eyebrow-warn">Le problème</span>
+        <div className="lp-container lp-two-col lp-reveal">
+          <div className="lp-pscard">
+            <span className="lp-eyebrow lp-eyebrow-muted">Le problème</span>
             <h2>La rupture de gaz, une galère du quotidien</h2>
-            <ul className="lp-list">
-              <li><i className="bx bx-x-circle"></i> Se déplacer jusqu'au point de vente le plus proche</li>
-              <li><i className="bx bx-x-circle"></i> Porter une bouteille lourde, parfois sous la pluie</li>
-              <li><i className="bx bx-x-circle"></i> Tomber sur un dépôt fermé ou en rupture</li>
+            <ul className="lp-pslist">
+              <li><span className="ps-ico ps-ico-x"><i className="bx bx-x"></i></span> Se déplacer jusqu'au point de vente le plus proche</li>
+              <li><span className="ps-ico ps-ico-x"><i className="bx bx-x"></i></span> Porter une bouteille lourde, parfois sous la pluie</li>
+              <li><span className="ps-ico ps-ico-x"><i className="bx bx-x"></i></span> Tomber sur un dépôt fermé ou en rupture</li>
             </ul>
           </div>
-          <div className="lp-card lp-solution-card">
-            <span className="lp-eyebrow lp-eyebrow-ok">La solution</span>
+          <div className="lp-pscard lp-pscard-accent">
+            <span className="lp-eyebrow">La solution</span>
             <h2>GazExpress vous connecte au vendeur le plus proche</h2>
-            <ul className="lp-list">
-              <li><i className="bx bx-check-circle"></i> Commandez depuis votre téléphone</li>
-              <li><i className="bx bx-check-circle"></i> Un vendeur proche accepte et vous livre</li>
-              <li><i className="bx bx-check-circle"></i> Vous suivez la livraison en temps réel</li>
+            <ul className="lp-pslist">
+              <li><span className="ps-ico ps-ico-check"><i className="bx bx-check"></i></span> Commandez depuis votre téléphone</li>
+              <li><span className="ps-ico ps-ico-check"><i className="bx bx-check"></i></span> Un vendeur proche accepte et vous livre</li>
+              <li><span className="ps-ico ps-ico-check"><i className="bx bx-check"></i></span> Vous suivez la livraison en temps réel</li>
             </ul>
           </div>
         </div>
@@ -214,46 +247,50 @@ function Landing() {
 
       {/* Comment ça marche */}
       <section className="lp-section" id="how">
-        <div className="lp-container">
-          <div className="lp-section-head">
-            <span className="lp-eyebrow">Simple et rapide</span>
-            <h2>Comment ça marche</h2>
-          </div>
-          <div className="lp-steps">
-            {STEPS.map((step, i) => (
-              <div className="lp-step" key={step.title}>
-                <div className="lp-step-num">{i + 1}</div>
-                <i className={`bx ${step.icon}`}></i>
-                <h3>{step.title}</h3>
-                <p>{step.text}</p>
-              </div>
-            ))}
+        <div className="lp-reveal">
+          <div className="lp-container">
+            <div className="lp-section-head">
+              <span className="lp-eyebrow">Simple et rapide</span>
+              <h2>Comment ça marche</h2>
+            </div>
+            <div className="lp-steps">
+              {STEPS.map((step, i) => (
+                <div className="lp-step" key={step.title}>
+                  <div className="lp-step-num">{i + 1}</div>
+                  <i className={`bx ${step.icon}`}></i>
+                  <h3>{step.title}</h3>
+                  <p>{step.text}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Avantages */}
       <section className="lp-section lp-alt">
-        <div className="lp-container">
-          <div className="lp-section-head">
-            <span className="lp-eyebrow">Pourquoi GazExpress</span>
-            <h2>Pensé pour votre confort</h2>
-          </div>
-          <div className="lp-features">
-            {FEATURES.map((f) => (
-              <div className="lp-feature" key={f.title}>
-                <div className="lp-feature-icon"><i className={`bx ${f.icon}`}></i></div>
-                <h3>{f.title}</h3>
-                <p>{f.text}</p>
-              </div>
-            ))}
+        <div className="lp-reveal">
+          <div className="lp-container">
+            <div className="lp-section-head">
+              <span className="lp-eyebrow">Pourquoi GazExpress</span>
+              <h2>Pensé pour votre confort</h2>
+            </div>
+            <div className="lp-features">
+              {FEATURES.map((f) => (
+                <div className="lp-feature" key={f.title}>
+                  <div className="lp-feature-icon"><i className={`bx ${f.icon}`}></i></div>
+                  <h3>{f.title}</h3>
+                  <p>{f.text}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Marques & accessoires */}
       <section className="lp-section">
-        <div className="lp-container">
+        <div className="lp-container lp-reveal">
           <div className="lp-section-head">
             <span className="lp-eyebrow">Toutes vos recharges</span>
             <h2>Marques &amp; accessoires disponibles</h2>
@@ -266,9 +303,15 @@ function Landing() {
               </span>
             ))}
           </div>
-          <div className="lp-accessories">
+          <div className="lp-acc-grid">
             {ACCESSORIES.map((a) => (
-              <span className="lp-acc-chip" key={a}><i className="bx bx-wrench"></i> {a}</span>
+              <article className="acc-card" key={a.name}>
+                <div className="acc-media"><img src={a.image} alt={a.name} /></div>
+                <div className="acc-body">
+                  <strong>{a.name}</strong>
+                  <span>{a.desc}</span>
+                </div>
+              </article>
             ))}
           </div>
         </div>
@@ -276,7 +319,7 @@ function Landing() {
 
       {/* Pour les vendeurs */}
       <section className="lp-section lp-vendors" id="vendors">
-        <div className="lp-container lp-two-col lp-vendors-inner">
+        <div className="lp-container lp-two-col lp-vendors-inner lp-reveal">
           <div>
             <span className="lp-eyebrow lp-eyebrow-lime">Vous avez une boutique de gaz ?</span>
             <h2>Devenez vendeur et développez vos ventes</h2>
@@ -285,24 +328,24 @@ function Landing() {
               commandes des clients proches de vous et augmentez votre chiffre d'affaires,
               sans changer votre façon de travailler.
             </p>
-            <ul className="lp-list lp-list-lime">
-              <li><i className="bx bx-check-circle"></i> Touchez plus de clients dans votre zone</li>
-              <li><i className="bx bx-check-circle"></i> Gérez vos commandes et votre stock facilement</li>
-              <li><i className="bx bx-check-circle"></i> Paiements suivis, livraisons organisées</li>
+            <ul className="lp-pslist">
+              <li><span className="ps-ico ps-ico-check"><i className="bx bx-check"></i></span> Touchez plus de clients dans votre zone</li>
+              <li><span className="ps-ico ps-ico-check"><i className="bx bx-check"></i></span> Gérez vos commandes et votre stock facilement</li>
+              <li><span className="ps-ico ps-ico-check"><i className="bx bx-check"></i></span> Paiements suivis, livraisons organisées</li>
             </ul>
             <Link to="/login" className="lp-btn lp-btn-primary lp-btn-lg">
               <i className="bx bxs-store"></i> Devenir vendeur
             </Link>
           </div>
-          <div className="lp-vendors-visual" aria-hidden="true">
-            <VendorIllustration />
+          <div className="lp-vendors-visual">
+            <img src={oryxFamille} alt="Bouteilles de gaz de toutes tailles" className="lp-vendors-photo" />
           </div>
         </div>
       </section>
 
       {/* Témoignages */}
       <section className="lp-section lp-alt">
-        <div className="lp-container">
+        <div className="lp-container lp-reveal">
           <div className="lp-section-head">
             <span className="lp-eyebrow">Ils nous font confiance</span>
             <h2>Des clients et vendeurs satisfaits</h2>
@@ -326,7 +369,7 @@ function Landing() {
 
       {/* FAQ */}
       <section className="lp-section" id="faq">
-        <div className="lp-container lp-faq-container">
+        <div className="lp-container lp-faq-container lp-reveal">
           <div className="lp-section-head">
             <span className="lp-eyebrow">Questions fréquentes</span>
             <h2>Tout ce qu'il faut savoir</h2>
@@ -394,23 +437,6 @@ function Landing() {
         </div>
       </footer>
     </div>
-  );
-}
-
-function VendorIllustration() {
-  return (
-    <svg viewBox="0 0 320 240" className="lp-illus" role="img" aria-label="Boutique de gaz">
-      <rect x="40" y="70" width="240" height="140" rx="14" fill="#ffffff" opacity="0.05" />
-      <rect x="40" y="70" width="240" height="34" rx="14" fill="#c6f135" />
-      <text x="160" y="93" textAnchor="middle" fontSize="15" fontWeight="800" fill="#0a0a0b">BOUTIQUE GAZ</text>
-      {[70, 130, 190].map((x) => (
-        <g key={x} transform={`translate(${x} 130)`}>
-          <rect x="0" y="10" width="34" height="60" rx="14" fill="#26262b" stroke="#3a3a42" />
-          <rect x="10" y="30" width="14" height="10" fill="#c6f135" opacity="0.8" />
-          <rect x="12" y="0" width="10" height="12" rx="3" fill="#c6f135" opacity="0.7" />
-        </g>
-      ))}
-    </svg>
   );
 }
 

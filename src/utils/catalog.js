@@ -7,34 +7,25 @@ const BRANDS = [
   {
     id: 'oryx',
     name: 'Oryx',
-    color: '#0B5FFF',
+    color: '#E4002B',
     contenances: [
       { kg: 6, echange: 4000, neuf: 22000 },
       { kg: 12.5, echange: 7500, neuf: 38000 },
     ],
   },
   {
-    id: 'puma',
-    name: 'Puma',
-    color: '#E4002B',
+    id: 'progaz',
+    name: 'Progaz',
+    color: '#7B2A9E',
     contenances: [
-      { kg: 6, echange: 3900, neuf: 21500 },
+      { kg: 6, echange: 3900, neuf: 21000 },
       { kg: 12.5, echange: 7300, neuf: 37000 },
     ],
   },
   {
-    id: 'total',
-    name: 'TotalEnergies',
-    color: '#ED0000',
-    contenances: [
-      { kg: 6, echange: 4200, neuf: 23000 },
-      { kg: 12.5, echange: 7800, neuf: 39000 },
-    ],
-  },
-  {
-    id: 'sodigaz',
-    name: 'Sodigaz',
-    color: '#009640',
+    id: 'benin-petro',
+    name: 'Benin Petro',
+    color: '#2F9E44',
     contenances: [
       { kg: 6, echange: 3800, neuf: 21000 },
       { kg: 12.5, echange: 7200, neuf: 36000 },
