@@ -13,7 +13,15 @@
   --danger: #f87171;
   --radius: 16px;
   --shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
+  --font-head: 'Outfit', 'Montserrat', system-ui, sans-serif;
   font-family: 'Montserrat', system-ui, sans-serif;
+}
+
+/* Police display « Outfit » pour les titres ; le corps reste en Montserrat. */
+h1,
+h2,
+h3 {
+  font-family: var(--font-head);
 }
 
 * {
