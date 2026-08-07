@@ -1,109 +1,123 @@
-// Authentification simulée (MVP) : OTP mocké, profil et adresses en localStorage.
-// Aucune passerelle SMS/email réelle — le code OTP est généré côté client et
-// affiché à l'utilisateur pour la démo. À remplacer par un vrai service en prod.
+// Authentification réelle via Supabase (users passwordless par code email,
+// vendeurs email + mot de passe). Remplace l'ancienne auth mockée.
 
-import { readJSON, writeJSON, makeId } from './storage';
+import { supabase } from '../lib/supabaseClient';
 
-const SESSION_KEY = 'gazexpress_session';
-const ADDRESSES_KEY = 'gazexpress_addresses';
-const PENDING_OTP_KEY = 'gazexpress_pending_otp';
+// --- Inscription / connexion USER (passwordless, code email) ------------
 
-// --- OTP (mock) ---------------------------------------------------------
-
-// Génère un code à 4 chiffres, le mémorise et le renvoie (pour affichage démo).
-export function requestOtp(identifier) {
-  const code = String(Math.floor(1000 + Math.random() * 9000));
-  writeJSON(PENDING_OTP_KEY, { identifier, code });
-  return code;
+// Envoie un code à 6 chiffres par email et prépare la création du compte
+// avec les métadonnées (rôle user, nom, prénom, WhatsApp).
+export async function requestUserSignup({ email, firstName, lastName, whatsapp }) {
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      shouldCreateUser: true,
+      data: {
+        role: 'user',
+        first_name: firstName,
+        last_name: lastName,
+        whatsapp,
+      },
+    },
+  });
+  if (error) throw error;
 }
 
-export function getPendingIdentifier() {
-  return readJSON(PENDING_OTP_KEY, null)?.identifier ?? null;
+// Renvoie un code à un email déjà connu (connexion client).
+export async function requestUserLogin(email) {
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: { shouldCreateUser: false },
+  });
+  if (error) throw error;
 }
 
-// Vérifie le code saisi ; en cas de succès, ouvre la session utilisateur.
-export function verifyOtp(code) {
-  const pending = readJSON(PENDING_OTP_KEY, null);
-  if (!pending || pending.code !== String(code).trim()) {
-    return false;
-  }
+// Vérifie le code reçu par email. type: 'email' (OTP connexion) ou 'signup'.
+export async function verifyEmailCode(email, token, type = 'email') {
+  const { data, error } = await supabase.auth.verifyOtp({ email, token, type });
+  if (error) throw error;
+  return data;
+}
 
-  const existing = readJSON(SESSION_KEY, null);
-  const session = existing ?? {
-    id: makeId(),
-    identifier: pending.identifier,
-    name: '',
-    createdAt: new Date().toISOString(),
-  };
-  writeJSON(SESSION_KEY, session);
-  localStorage.removeItem(PENDING_OTP_KEY);
-  return true;
+// --- Inscription / connexion VENDEUR (email + mot de passe) -------------
+
+// Crée le compte vendeur ; un email de confirmation (code) est envoyé.
+export async function signUpVendor({ email, password, firstName, lastName, whatsapp }) {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        role: 'vendor',
+        first_name: firstName,
+        last_name: lastName,
+        whatsapp,
+      },
+    },
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function loginWithPassword(email, password) {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) throw error;
+  return data;
+}
+
+// --- CIP + détails vendeur (après ouverture de session) -----------------
+
+// Envoie la photo de CIP dans le bucket privé, dossier {uid}/cip.<ext>.
+export async function uploadCip(userId, file) {
+  const ext = (file.name?.split('.').pop() || 'jpg').toLowerCase();
+  const path = `${userId}/cip.${ext}`;
+  const { error } = await supabase.storage
+    .from('cip')
+    .upload(path, file, { upsert: true, contentType: file.type || 'image/jpeg' });
+  if (error) throw error;
+  return path;
+}
+
+export async function saveVendorDetails(userId, { cipPath, coords, locationLabel }) {
+  const { error } = await supabase.from('vendor_details').upsert({
+    id: userId,
+    cip_path: cipPath,
+    location_lat: coords?.lat ?? null,
+    location_lng: coords?.lng ?? null,
+    location_label: locationLabel || null,
+    status: 'pending',
+  });
+  if (error) throw error;
 }
 
 // --- Session / profil ---------------------------------------------------
 
-export function getSession() {
-  return readJSON(SESSION_KEY, null);
+export async function getSession() {
+  const { data } = await supabase.auth.getSession();
+  return data.session;
 }
 
-export function isAuthenticated() {
-  return getSession() !== null;
+export async function getProfile(userId) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
 }
 
-export function updateProfile(updates) {
-  const session = getSession();
-  if (!session) return null;
-  const next = { ...session, ...updates };
-  writeJSON(SESSION_KEY, next);
-  return next;
+export async function updateProfile(userId, updates) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .update(updates)
+    .eq('id', userId)
+    .select()
+    .maybeSingle();
+  if (error) throw error;
+  return data;
 }
 
-export function logout() {
-  localStorage.removeItem(SESSION_KEY);
-}
-
-// --- Adresses -----------------------------------------------------------
-
-export function getAddresses() {
-  return readJSON(ADDRESSES_KEY, []);
-}
-
-export function getDefaultAddress() {
-  const addresses = getAddresses();
-  return addresses.find((a) => a.isDefault) ?? addresses[0] ?? null;
-}
-
-export function addAddress(address) {
-  const addresses = getAddresses();
-  const entry = {
-    id: makeId(),
-    label: address.label || 'Adresse',
-    details: address.details || '',
-    coords: address.coords || null,
-    isDefault: addresses.length === 0 || !!address.isDefault,
-  };
-  const next = entry.isDefault
-    ? [...addresses.map((a) => ({ ...a, isDefault: false })), entry]
-    : [...addresses, entry];
-  writeJSON(ADDRESSES_KEY, next);
-  return entry;
-}
-
-export function updateAddress(id, updates) {
-  const next = getAddresses().map((a) => (a.id === id ? { ...a, ...updates } : a));
-  writeJSON(ADDRESSES_KEY, next);
-}
-
-export function removeAddress(id) {
-  let next = getAddresses().filter((a) => a.id !== id);
-  // S'assurer qu'il reste toujours une adresse par défaut si la liste n'est pas vide.
-  if (next.length > 0 && !next.some((a) => a.isDefault)) {
-    next = next.map((a, i) => ({ ...a, isDefault: i === 0 }));
-  }
-  writeJSON(ADDRESSES_KEY, next);
-}
-
-export function setDefaultAddress(id) {
-  const next = getAddresses().map((a) => ({ ...a, isDefault: a.id === id }));
-  writeJSON(ADDRESSES_KEY, next);
+export async function signOut() {
+  await supabase.auth.signOut();
 }

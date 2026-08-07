@@ -3,6 +3,9 @@ import RequireAuth from './components/RequireAuth';
 import AppNav from './components/AppNav';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
+import Inscription from './pages/Inscription';
+import DevenirVendeur from './pages/DevenirVendeur';
+import Vendeur from './pages/Vendeur';
 import Home from './pages/Home';
 import NewOrder from './pages/NewOrder';
 import Tracking from './pages/Tracking';
@@ -31,6 +34,16 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/inscription" element={<Inscription />} />
+        <Route path="/devenir-vendeur" element={<DevenirVendeur />} />
+        <Route
+          path="/vendeur"
+          element={
+            <RequireAuth>
+              <Vendeur />
+            </RequireAuth>
+          }
+        />
         <Route element={<AppLayout />}>
           <Route path="/app" element={<Home />} />
           <Route path="/commander" element={<NewOrder />} />

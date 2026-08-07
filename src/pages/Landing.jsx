@@ -102,7 +102,7 @@ function ProductCard({ item }) {
         <strong>{item.brand} · {item.kg}</strong>
         <div className="product-foot">
           <span className="product-price">{item.price}</span>
-          <Link to="/login" className="product-buy" aria-label="Commander"><i className="bx bx-plus"></i></Link>
+          <Link to="/inscription" className="product-buy" aria-label="Commander"><i className="bx bx-plus"></i></Link>
         </div>
       </div>
     </article>
@@ -208,7 +208,7 @@ function Landing() {
           </nav>
           <div className="lp-nav-actions">
             <Link to="/login" className="lp-btn lp-btn-ghost">Se connecter</Link>
-            <Link to="/login" className="lp-btn lp-btn-primary">
+            <Link to="/inscription" className="lp-btn lp-btn-primary">
               S'inscrire <i className="bx bx-wallet"></i>
             </Link>
             <button
@@ -232,7 +232,7 @@ function Landing() {
             <Link to="/login" className="lp-btn lp-btn-ghost lp-btn-block" onClick={() => setMenuOpen(false)}>
               Se connecter
             </Link>
-            <Link to="/login" className="lp-btn lp-btn-primary lp-btn-block" onClick={() => setMenuOpen(false)}>
+            <Link to="/inscription" className="lp-btn lp-btn-primary lp-btn-block" onClick={() => setMenuOpen(false)}>
               S'inscrire
             </Link>
           </nav>
@@ -254,7 +254,7 @@ function Landing() {
             VOUS LIVRE EN QUELQUES CLICS — SANS DÉPLACEMENT.
           </p>
           <div className="lp-hero-cta">
-            <Link to="/login" className="lp-btn lp-btn-primary lp-btn-lg">Commander <i className="bx bx-up-arrow-alt lp-rot"></i></Link>
+            <Link to="/inscription" className="lp-btn lp-btn-primary lp-btn-lg">Commander <i className="bx bx-up-arrow-alt lp-rot"></i></Link>
             <a href="#vendors" className="lp-btn lp-btn-outline lp-btn-lg">Devenir vendeur <i className="bx bx-up-arrow-alt lp-rot"></i></a>
           </div>
         </div>
@@ -273,7 +273,7 @@ function Landing() {
               <span className="lp-eyebrow">Sélection</span>
               <h2>Recharges populaires</h2>
             </div>
-            <Link to="/login" className="lp-link-more">Tout voir <i className="bx bx-right-arrow-alt"></i></Link>
+            <Link to="/inscription" className="lp-link-more">Tout voir <i className="bx bx-right-arrow-alt"></i></Link>
           </div>
           <div className="product-grid">
             {POPULAR.map((item, i) => (
@@ -401,7 +401,7 @@ function Landing() {
               <li><span className="ps-ico ps-ico-check"><i className="bx bx-check"></i></span> Gérez vos commandes et votre stock facilement</li>
               <li><span className="ps-ico ps-ico-check"><i className="bx bx-check"></i></span> Paiements suivis, livraisons organisées</li>
             </ul>
-            <Link to="/login" className="lp-btn lp-btn-primary lp-btn-lg">
+            <Link to="/devenir-vendeur" className="lp-btn lp-btn-primary lp-btn-lg">
               <i className="bx bxs-store"></i> Devenir vendeur
             </Link>
           </div>
