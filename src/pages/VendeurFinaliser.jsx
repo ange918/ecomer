@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AuthShell from '../components/AuthShell';
 import { useAuth } from '../lib/AuthContext';
 import { uploadCip, saveVendorDetails, signOut } from '../utils/auth';
 import { getCurrentPosition } from '../utils/geo';
@@ -64,15 +65,8 @@ function VendeurFinaliser() {
   };
 
   return (
-    <div className="auth-screen">
-      <div className="auth-hero">
-        <i className="bx bxs-store"></i>
-        <h1>Finaliser ma boutique</h1>
-        <p>Dernière étape avant la vérification</p>
-      </div>
-
-      <div className="auth-card">
-        <form onSubmit={finish}>
+    <AuthShell title="Finaliser ma boutique" subtitle="Dernière étape avant la vérification.">
+      <form onSubmit={finish}>
           <label>Photo de votre CIP</label>
           <label className="cip-drop">
             <input type="file" accept="image/*" capture="environment" onChange={onCip} hidden />
@@ -107,8 +101,7 @@ function VendeurFinaliser() {
         <button type="button" className="btn btn-ghost btn-block logout" onClick={handleLogout}>
           <i className="bx bx-log-out"></i> Se déconnecter
         </button>
-      </div>
-    </div>
+    </AuthShell>
   );
 }
 
