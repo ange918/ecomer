@@ -1996,14 +1996,12 @@ textarea:focus {
 }
 
 .why-row {
-  display: flex;
-  align-items: stretch;
-  gap: 18px;
+  position: relative;
+  overflow: hidden;
   background: var(--elev);
   border: 1px solid var(--line);
-  border-left: 3px solid var(--primary);
-  border-radius: 16px;
-  padding: 18px 20px;
+  border-radius: 18px;
+  padding: 26px 28px;
   margin-left: calc(var(--i) * 26px);
   transition: transform 0.16s ease, border-color 0.2s ease;
 }
@@ -2013,69 +2011,46 @@ textarea:focus {
   border-color: rgba(198, 241, 53, 0.4);
 }
 
-.why-num {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-width: 92px;
-}
-
-.why-step {
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.why-num strong {
-  font-size: 2.1rem;
+/* Grand numéro en filigrane */
+.why-ghost {
+  position: absolute;
+  top: -16px;
+  right: 16px;
+  font-size: 6rem;
   font-weight: 800;
   line-height: 1;
+  color: rgba(198, 241, 53, 0.08);
+  pointer-events: none;
+  user-select: none;
+}
+
+.why-body {
+  position: relative;
+  z-index: 1;
+}
+
+.why-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(198, 241, 53, 0.12);
   color: var(--primary);
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  margin-bottom: 14px;
 }
 
-.why-bar {
-  display: block;
-  height: 4px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.08);
-  margin-top: 10px;
-  overflow: hidden;
+.why-body h3 {
+  font-size: 1.15rem;
+  margin-bottom: 6px;
 }
 
-.why-bar span {
-  display: block;
-  height: 100%;
-  background: var(--primary);
-  border-radius: 4px;
-}
-
-.why-content {
-  border-left: 1px solid var(--line);
-  padding-left: 18px;
-}
-
-.why-content-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 4px;
-}
-
-.why-content-head i {
-  font-size: 1.4rem;
-  color: var(--primary);
-}
-
-.why-content-head h3 {
-  font-size: 1.05rem;
-}
-
-.why-content p {
+.why-body p {
   color: var(--muted);
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   line-height: 1.55;
+  max-width: 540px;
 }
 
 @media (max-width: 700px) {
@@ -2086,30 +2061,15 @@ textarea:focus {
 
   .why-row {
     margin-left: 0;
-    flex-direction: column;
-    gap: 10px;
-    padding: 18px;
+    padding: 24px;
     /* Empilement au scroll : chaque carte se colle sous la précédente. */
     position: sticky;
     top: calc(82px + var(--i) * 16px);
     box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.6);
   }
 
-  .why-num {
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
-    min-width: 0;
-  }
-
-  .why-bar {
-    flex: 1;
-    margin-top: 0;
-  }
-
-  .why-content {
-    border-left: none;
-    padding-left: 0;
+  .why-ghost {
+    font-size: 5rem;
   }
 }
 

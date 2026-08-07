@@ -343,18 +343,10 @@ function Landing() {
             <div className="why-list">
               {FEATURES.map((f, i) => (
                 <div className="why-row" style={{ '--i': i }} key={f.title}>
-                  <div className="why-num">
-                    <span className="why-step">Atout</span>
-                    <strong>{String(i + 1).padStart(2, '0')}</strong>
-                    <span className="why-bar">
-                      <span style={{ width: `${((i + 1) / FEATURES.length) * 100}%` }}></span>
-                    </span>
-                  </div>
-                  <div className="why-content">
-                    <div className="why-content-head">
-                      <i className={`bx ${f.icon}`}></i>
-                      <h3>{f.title}</h3>
-                    </div>
+                  <span className="why-ghost" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                  <div className="why-body">
+                    <div className="why-icon"><i className={`bx ${f.icon}`}></i></div>
+                    <h3>{f.title}</h3>
                     <p>{f.text}</p>
                   </div>
                 </div>
