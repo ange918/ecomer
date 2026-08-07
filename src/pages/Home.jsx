@@ -1,139 +1,82 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { getPhotos } from '../utils/photos';
-import PhotoCard from '../components/PhotoCard';
+import { getSession } from '../utils/auth';
+import {
+  getActiveOrder,
+  getOrders,
+  operationLabel,
+  formatXOF,
+  STATUS_LABELS,
+} from '../utils/orders';
 
+// Tableau de bord d'accueil : commande active, raccourci de commande, dernières recharges.
 function Home() {
-  const [photos, setPhotos] = useState([]);
-  const [stats, setStats] = useState({ photos: 0, categories: 0 });
+  const [session] = useState(() => getSession());
+  const [activeOrder] = useState(() => getActiveOrder());
+  const [recentOrders] = useState(() => getOrders().slice(0, 3));
 
-  useEffect(() => {
-    const allPhotos = getPhotos();
-    setPhotos(allPhotos);
-    
-    const categories = new Set(allPhotos.map(p => p.category)).size;
-    setStats({
-      photos: allPhotos.length,
-      categories: categories
-    });
-  }, []);
-
-  useEffect(() => {
-    const animateCounter = (element, target, duration = 2000) => {
-      let current = 0;
-      const increment = target / (duration / 16);
-      const timer = setInterval(() => {
-        current += increment;
-        if (current >= target) {
-          element.textContent = target.toLocaleString();
-          clearInterval(timer);
-        } else {
-          element.textContent = Math.floor(current).toLocaleString();
-        }
-      }, 16);
-    };
-
-    const counters = document.querySelectorAll('.stat-number');
-    counters.forEach((counter, index) => {
-      const targets = [stats.photos, stats.categories];
-      if (targets[index] !== undefined) {
-        animateCounter(counter, targets[index]);
-      }
-    });
-  }, [stats]);
-
-  const recentPhotos = photos.slice(0, 6);
+  const greetingName = session?.name?.trim() || 'à vous';
 
   return (
-    <div className="home">
-      <section className="hero">
-        <div className="hero-content">
-          <h1 className="hero-title">STYLE URBAIN</h1>
-          <p className="hero-subtitle">Collection 2025</p>
-          <Link to="/gallery" className="btn btn-primary">DÉCOUVRIR</Link>
-        </div>
+    <div className="page home">
+      <section className="greeting">
+        <p className="eyebrow">Bonjour</p>
+        <h1>Bienvenue {greetingName} 👋</h1>
       </section>
 
-      <section className="stats">
-        <div className="container">
-          <div className="stats-grid">
-            <div className="stat-item">
-              <i className='bx bx-image'></i>
-              <span className="stat-number">0</span>
-              <p>PHOTOS</p>
-            </div>
-            <div className="stat-item">
-              <i className='bx bx-grid-alt'></i>
-              <span className="stat-number">0</span>
-              <p>CATÉGORIES</p>
-            </div>
-            <div className="stat-item">
-              <i className='bx bx-user'></i>
-              <span className="stat-number">16</span>
-              <p>BIG SIXTEEN</p>
-            </div>
+      {activeOrder && (
+        <Link to={`/suivi/${activeOrder.id}`} className="active-order-card">
+          <div className="active-order-head">
+            <span className="pulse-dot"></span>
+            <span>Commande en cours</span>
           </div>
-        </div>
-      </section>
+          <strong>{operationLabel(activeOrder)}</strong>
+          <span className="active-order-status">
+            {STATUS_LABELS[activeOrder.status]}
+            <i className="bx bx-chevron-right"></i>
+          </span>
+        </Link>
+      )}
 
-      <section className="categories">
-        <div className="container">
-          <h2 className="section-title">CATÉGORIES</h2>
-          <div className="categories-grid">
-            <Link to="/gallery?category=streetwear" className="category-card">
-              <div className="category-icon">
-                <i className='bx bx-shopping-bag'></i>
-              </div>
-              <h3>STREETWEAR</h3>
-            </Link>
-            <Link to="/gallery?category=casual" className="category-card">
-              <div className="category-icon">
-                <i className='bx bx-coffee'></i>
-              </div>
-              <h3>CASUAL</h3>
-            </Link>
-            <Link to="/gallery?category=elegant" className="category-card">
-              <div className="category-icon">
-                <i className='bx bx-briefcase'></i>
-              </div>
-              <h3>ÉLÉGANT</h3>
-            </Link>
-            <Link to="/gallery?category=sport" className="category-card">
-              <div className="category-icon">
-                <i className='bx bx-run'></i>
-              </div>
-              <h3>SPORT</h3>
-            </Link>
+      <Link to="/commander" className="cta-order">
+        <div className="cta-icon">
+          <i className="bx bxs-flame"></i>
+        </div>
+        <div className="cta-text">
+          <strong>Commander du gaz</strong>
+          <span>Échange ou bouteille neuve, livré chez vous</span>
+        </div>
+        <i className="bx bx-chevron-right cta-arrow"></i>
+      </Link>
+
+      <section className="home-section">
+        <div className="section-head">
+          <h2>Dernières recharges</h2>
+          <Link to="/historique" className="section-link">
+            Tout voir
+          </Link>
+        </div>
+
+        {recentOrders.length === 0 ? (
+          <div className="empty-hint">
+            <i className="bx bx-package"></i>
+            <p>Aucune recharge pour l'instant.</p>
           </div>
-        </div>
-      </section>
-
-      <section className="products-section">
-        <div className="container">
-          <h2 className="section-title">PHOTOS RÉCENTES</h2>
-          <div className="photos-grid-home">
-            {recentPhotos.map(photo => (
-              <PhotoCard key={photo.id} photo={photo} />
+        ) : (
+          <ul className="order-list">
+            {recentOrders.map((order) => (
+              <li key={order.id}>
+                <Link to={`/suivi/${order.id}`} className="order-row">
+                  <div>
+                    <strong>{operationLabel(order)}</strong>
+                    <span className="order-sub">{STATUS_LABELS[order.status]}</span>
+                  </div>
+                  <span className="order-total">{formatXOF(order.total)}</span>
+                </Link>
+              </li>
             ))}
-          </div>
-          <div className="text-center mt-4">
-            <Link to="/gallery" className="btn btn-secondary">VOIR TOUT</Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="newsletter">
-        <div className="container">
-          <div className="newsletter-content">
-            <h2>SUIVEZ-NOUS</h2>
-            <p>Restez connecté pour voir nos derniers styles</p>
-            <div className="social-links">
-              <a href="#" className="social-icon"><i className='bx bxl-instagram'></i></a>
-              <a href="#" className="social-icon"><i className='bx bxl-facebook'></i></a>
-              <a href="#" className="social-icon"><i className='bx bxl-twitter'></i></a>
-            </div>
-          </div>
-        </div>
+          </ul>
+        )}
       </section>
     </div>
   );

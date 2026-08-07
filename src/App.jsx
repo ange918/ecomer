@@ -1,38 +1,47 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './components/Header';
-import Footer from './components/Footer';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import RequireAuth from './components/RequireAuth';
+import AppNav from './components/AppNav';
+import Landing from './pages/Landing';
+import Login from './pages/Login';
 import Home from './pages/Home';
-import Shop from './pages/Shop';
-import Product from './pages/Product';
-import Cart from './pages/Cart';
-import Gallery from './pages/Gallery';
-import About from './pages/About';
-import Contact from './pages/Contact';
-import LoginAdmin from './pages/LoginAdmin';
-import Admin from './pages/Admin';
+import NewOrder from './pages/NewOrder';
+import Tracking from './pages/Tracking';
+import History from './pages/History';
+import Profile from './pages/Profile';
+import Support from './pages/Support';
 import './styles.css';
+
+// Layout des écrans authentifiés : barre de navigation + contenu.
+function AppLayout() {
+  return (
+    <RequireAuth>
+      <div className="app-shell">
+        <AppNav />
+        <main className="app-main">
+          <Outlet />
+        </main>
+      </div>
+    </RequireAuth>
+  );
+}
 
 function App() {
   return (
-    <Router>
-      <div className="app">
-        <Header />
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/product/:id" element={<Product />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/gallery" element={<Gallery />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/admin/login" element={<LoginAdmin />} />
-            <Route path="/admin/dashboard" element={<Admin />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route element={<AppLayout />}>
+          <Route path="/app" element={<Home />} />
+          <Route path="/commander" element={<NewOrder />} />
+          <Route path="/suivi/:id" element={<Tracking />} />
+          <Route path="/historique" element={<History />} />
+          <Route path="/profil" element={<Profile />} />
+          <Route path="/support" element={<Support />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
