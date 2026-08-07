@@ -1154,7 +1154,6 @@ textarea:focus {
 .landing {
   background: var(--bg);
   color: var(--ink);
-  overflow-x: hidden;
 }
 
 .lp-container {
@@ -2080,11 +2079,20 @@ textarea:focus {
 }
 
 @media (max-width: 700px) {
+  .why-list {
+    /* léger surplus de bas pour laisser la dernière carte se stabiliser */
+    padding-bottom: 8px;
+  }
+
   .why-row {
     margin-left: 0;
     flex-direction: column;
     gap: 10px;
-    padding: 16px;
+    padding: 18px;
+    /* Empilement au scroll : chaque carte se colle sous la précédente. */
+    position: sticky;
+    top: calc(82px + var(--i) * 16px);
+    box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.6);
   }
 
   .why-num {

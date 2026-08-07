@@ -3,20 +3,16 @@ const OUT='/tmp/claude-0/-home-user-ecomer/0027802f-2f73-506d-8118-2ceb986751df/
 const b = await puppeteer.launch({ executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome', args:['--no-sandbox','--disable-gpu'] });
 const pg = await b.newPage();
 await pg.emulateMediaFeatures([{ name:'prefers-reduced-motion', value:'reduce' }]);
-await pg.setViewport({ width:1200, height:900, deviceScaleFactor:1 });
-await pg.goto('http://localhost:4173/', { waitUntil:'load' });
-await new Promise(r=>setTimeout(r,600));
-const el = await pg.$('#why');
-await el.scrollIntoView();
-await new Promise(r=>setTimeout(r,300));
-await el.screenshot({ path: OUT+'/why-desktop.png' });
-// mobile
 await pg.setViewport({ width:390, height:844, deviceScaleFactor:2, isMobile:true });
 await pg.goto('http://localhost:4173/', { waitUntil:'load' });
 await new Promise(r=>setTimeout(r,500));
-const el2 = await pg.$('#why');
-await el2.scrollIntoView();
+const m = await pg.evaluate(()=>({ sw:document.documentElement.scrollWidth, iw:window.innerWidth, whyTop: document.querySelector('#why').getBoundingClientRect().top + window.scrollY }));
+console.log('scrollWidth', m.sw, 'innerWidth', m.iw, 'whyTop', Math.round(m.whyTop));
+await pg.evaluate((y)=>window.scrollTo(0, y), Math.round(m.whyTop + 260));
 await new Promise(r=>setTimeout(r,300));
-await el2.screenshot({ path: OUT+'/why-mobile.png' });
+await pg.screenshot({ path: OUT+'/stack-1.png' });
+await pg.evaluate((y)=>window.scrollTo(0, y), Math.round(m.whyTop + 620));
+await new Promise(r=>setTimeout(r,300));
+await pg.screenshot({ path: OUT+'/stack-2.png' });
 console.log('done');
 await b.close();
