@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Inscription from './pages/Inscription';
 import DevenirVendeur from './pages/DevenirVendeur';
 import Vendeur from './pages/Vendeur';
+import VendeurFinaliser from './pages/VendeurFinaliser';
 import Home from './pages/Home';
 import NewOrder from './pages/NewOrder';
 import Tracking from './pages/Tracking';
@@ -41,6 +42,14 @@ function App() {
           element={
             <RequireAuth>
               <Vendeur />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/vendeur/finaliser"
+          element={
+            <RequireAuth>
+              <VendeurFinaliser />
             </RequireAuth>
           }
         />

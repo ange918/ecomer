@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AuthShell from '../components/AuthShell';
 import { useAuth } from '../lib/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { signOut } from '../utils/auth';
@@ -22,19 +23,23 @@ function Vendeur() {
     if (!session?.user) return;
     supabase
       .from('vendor_details')
-      .select('status')
+      .select('status, cip_path')
       .eq('id', session.user.id)
       .maybeSingle()
       .then(({ data }) => {
-        if (active) {
-          setStatus(data?.status ?? 'pending');
-          setLoading(false);
+        if (!active) return;
+        // Profil vendeur incomplet (pas de CIP) → onboarding.
+        if (!data || !data.cip_path) {
+          navigate('/vendeur/finaliser', { replace: true });
+          return;
         }
+        setStatus(data.status ?? 'pending');
+        setLoading(false);
       });
     return () => {
       active = false;
     };
-  }, [session]);
+  }, [session, navigate]);
 
   const handleLogout = async () => {
     await signOut();
@@ -44,14 +49,11 @@ function Vendeur() {
   const s = STATUS[status] ?? STATUS.pending;
 
   return (
-    <div className="auth-screen">
-      <div className="auth-hero">
-        <i className="bx bxs-store"></i>
-        <h1>Espace vendeur</h1>
-        <p>{profile?.first_name ? `Bonjour ${profile.first_name}` : 'Bienvenue'}</p>
-      </div>
-
-      <div className="auth-card vendor-status">
+    <AuthShell
+      title="Espace vendeur"
+      subtitle={profile?.first_name ? `Bonjour ${profile.first_name}` : 'Bienvenue'}
+    >
+      <div className="vendor-status">
         {loading ? (
           <p className="muted">Chargement…</p>
         ) : (
@@ -61,11 +63,11 @@ function Vendeur() {
             <p>{s.text}</p>
           </>
         )}
-        <button type="button" className="btn btn-ghost btn-block logout" onClick={handleLogout}>
-          <i className="bx bx-log-out"></i> Se déconnecter
-        </button>
       </div>
-    </div>
+      <button type="button" className="btn btn-ghost btn-block logout" onClick={handleLogout}>
+        <i className="bx bx-log-out"></i> Se déconnecter
+      </button>
+    </AuthShell>
   );
 }
 

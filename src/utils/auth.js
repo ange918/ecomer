@@ -3,15 +3,15 @@
 
 import { supabase } from '../lib/supabaseClient';
 
-// --- Inscription / connexion USER (passwordless, code email) ------------
+// --- Inscription CLIENT (email + mot de passe) --------------------------
 
-// Envoie un code à 6 chiffres par email et prépare la création du compte
-// avec les métadonnées (rôle user, nom, prénom, WhatsApp).
-export async function requestUserSignup({ email, firstName, lastName, whatsapp }) {
-  const { error } = await supabase.auth.signInWithOtp({
+// Crée le compte client ; un email de confirmation (lien) est envoyé.
+export async function signUpClient({ email, password, firstName, lastName, whatsapp }) {
+  const { data, error } = await supabase.auth.signUp({
     email,
+    password,
     options: {
-      shouldCreateUser: true,
+      emailRedirectTo: `${window.location.origin}/app`,
       data: {
         role: 'user',
         first_name: firstName,
@@ -21,22 +21,17 @@ export async function requestUserSignup({ email, firstName, lastName, whatsapp }
     },
   });
   if (error) throw error;
-}
-
-// Renvoie un code à un email déjà connu (connexion client).
-export async function requestUserLogin(email) {
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: { shouldCreateUser: false },
-  });
-  if (error) throw error;
-}
-
-// Vérifie le code reçu par email. type: 'email' (OTP connexion) ou 'signup'.
-export async function verifyEmailCode(email, token, type = 'email') {
-  const { data, error } = await supabase.auth.verifyOtp({ email, token, type });
-  if (error) throw error;
   return data;
+}
+
+// Rôle d'un utilisateur (pour rediriger après connexion).
+export async function getRole(userId) {
+  const { data } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', userId)
+    .maybeSingle();
+  return data?.role ?? 'user';
 }
 
 // --- Inscription / connexion VENDEUR (email + mot de passe) -------------
@@ -47,6 +42,7 @@ export async function signUpVendor({ email, password, firstName, lastName, whats
     email,
     password,
     options: {
+      emailRedirectTo: `${window.location.origin}/vendeur`,
       data: {
         role: 'vendor',
         first_name: firstName,
