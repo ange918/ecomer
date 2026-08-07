@@ -26,7 +26,7 @@ MAPPING = {
 }
 
 
-def process(session, src_path, out_path):
+def process(session, src_path, out_path, square=True):
     with open(src_path, "rb") as f:
         cut = remove(f.read(), session=session)
     img = Image.open(io.BytesIO(cut)).convert("RGBA")
@@ -35,6 +35,15 @@ def process(session, src_path, out_path):
     bbox = img.getbbox()
     if bbox:
         img = img.crop(bbox)
+
+    # Placer le contenu, centré, sur un canevas carré transparent : toutes les
+    # images s'alignent alors parfaitement au centre de leur carte.
+    if square:
+        w, h = img.size
+        side = int(max(w, h) * 1.10)
+        canvas = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+        canvas.paste(img, ((side - w) // 2, (side - h) // 2), img)
+        img = canvas
 
     # Redimensionner en gardant les proportions.
     img.thumbnail((MAX_SIZE, MAX_SIZE), Image.LANCZOS)
@@ -51,7 +60,7 @@ def main():
         if not os.path.exists(src_path):
             print(f"!! introuvable : {src}")
             continue
-        size = process(session, src_path, out_path)
+        size = process(session, src_path, out_path, square=(out != "oryx-famille.png"))
         print(f"ok  {out:22} {size[0]}x{size[1]}")
 
 

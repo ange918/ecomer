@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -109,8 +109,55 @@ function ProductCard({ item }) {
   );
 }
 
+// Carrousel 3D auto-rotatif du hero : les 3 cartes tournent en perspective.
+function Hero3DCarousel() {
+  const n = HERO_CARDS.length;
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const t = setInterval(() => setActive((a) => (a + 1) % n), 3800);
+    return () => clearInterval(t);
+  }, [n]);
+
+  const posClass = (i) => {
+    let d = i - active;
+    if (d > n / 2) d -= n;
+    if (d < -n / 2) d += n;
+    if (d === 0) return 'is-active';
+    return d < 0 ? 'is-left' : 'is-right';
+  };
+
+  return (
+    <div className="hero3d-wrap">
+      <button type="button" className="hero-arrow" aria-label="Précédent" onClick={() => setActive((a) => (a - 1 + n) % n)}>
+        <i className="bx bx-chevron-left"></i>
+      </button>
+      <div className="hero3d">
+        {HERO_CARDS.map((card, i) => {
+          const cls = posClass(i);
+          return (
+            <div key={card.brand + i} className={`hero3d-card ${cls}`} onClick={() => setActive(i)}>
+              <HeroCard card={card} center={cls === 'is-active'} />
+            </div>
+          );
+        })}
+      </div>
+      <button type="button" className="hero-arrow" aria-label="Suivant" onClick={() => setActive((a) => (a + 1) % n)}>
+        <i className="bx bx-chevron-right"></i>
+      </button>
+      <div className="hero3d-dots">
+        {HERO_CARDS.map((card, i) => (
+          <button key={card.brand + i} type="button" aria-label={`Voir ${card.brand}`} className={i === active ? 'on' : ''} onClick={() => setActive(i)}></button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Landing() {
   const rootRef = useRef(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -123,7 +170,7 @@ function Landing() {
         stagger: 0.12,
         ease: 'power3.out',
       });
-      gsap.from('.hero-carousel', {
+      gsap.from('.hero3d-wrap', {
         y: 34,
         opacity: 0,
         duration: 0.8,
@@ -149,7 +196,7 @@ function Landing() {
       {/* Navigation */}
       <header className="lp-nav">
         <div className="lp-container lp-nav-inner">
-          <a href="#top" className="lp-brand">
+          <a href="#top" className="lp-brand" onClick={() => setMenuOpen(false)}>
             <span className="lp-logo"><i className="bx bxs-flame"></i></span>
             GazExpress
           </a>
@@ -164,9 +211,32 @@ function Landing() {
             <Link to="/login" className="lp-btn lp-btn-primary">
               S'inscrire <i className="bx bx-wallet"></i>
             </Link>
-            <button type="button" className="lp-burger" aria-label="Menu"><i className="bx bx-menu"></i></button>
+            <button
+              type="button"
+              className="lp-burger"
+              aria-label="Menu"
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((o) => !o)}
+            >
+              <i className={`bx ${menuOpen ? 'bx-x' : 'bx-menu'}`}></i>
+            </button>
           </div>
         </div>
+
+        {menuOpen && (
+          <nav className="lp-mobile-menu">
+            <a href="#top" onClick={() => setMenuOpen(false)}>Accueil</a>
+            <a href="#how" onClick={() => setMenuOpen(false)}>Comment ça marche</a>
+            <a href="#vendors" onClick={() => setMenuOpen(false)}>Vendeurs</a>
+            <a href="#faq" onClick={() => setMenuOpen(false)}>FAQ</a>
+            <Link to="/login" className="lp-btn lp-btn-ghost lp-btn-block" onClick={() => setMenuOpen(false)}>
+              Se connecter
+            </Link>
+            <Link to="/login" className="lp-btn lp-btn-primary lp-btn-block" onClick={() => setMenuOpen(false)}>
+              S'inscrire
+            </Link>
+          </nav>
+        )}
       </header>
 
       {/* Hero */}
@@ -189,17 +259,9 @@ function Landing() {
           </div>
         </div>
 
-        {/* Carrousel de cartes */}
+        {/* Carrousel 3D de cartes */}
         <div className="lp-container">
-          <div className="hero-carousel">
-            <button type="button" className="hero-arrow" aria-label="Précédent"><i className="bx bx-chevron-left"></i></button>
-            <div className="hero-cards">
-              {HERO_CARDS.map((card, i) => (
-                <HeroCard key={card.brand + i} card={card} center={i === 1} />
-              ))}
-            </div>
-            <button type="button" className="hero-arrow" aria-label="Suivant"><i className="bx bx-chevron-right"></i></button>
-          </div>
+          <Hero3DCarousel />
         </div>
       </section>
 

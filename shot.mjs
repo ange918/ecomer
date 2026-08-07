@@ -1,0 +1,16 @@
+import puppeteer from 'puppeteer-core';
+const OUT='/tmp/claude-0/-home-user-ecomer/0027802f-2f73-506d-8118-2ceb986751df/scratchpad';
+const b = await puppeteer.launch({ executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome', args:['--no-sandbox','--disable-gpu'] });
+const pg = await b.newPage();
+await pg.setViewport({ width:390, height:844, deviceScaleFactor:2, isMobile:true, hasTouch:true });
+await pg.goto('http://localhost:4173/', { waitUntil:'load' });
+await new Promise(r=>setTimeout(r,1200));
+await pg.screenshot({ path: OUT+'/m-hero.png' });
+console.log('hero shot ok');
+const hasBurger = await pg.$('.lp-burger');
+console.log('burger found:', !!hasBurger);
+await pg.evaluate(()=>document.querySelector('.lp-burger').click());
+await new Promise(r=>setTimeout(r,400));
+await pg.screenshot({ path: OUT+'/m-menu.png' });
+console.log('menu shot ok');
+await b.close();

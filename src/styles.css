@@ -1154,6 +1154,7 @@ textarea:focus {
 .landing {
   background: var(--bg);
   color: var(--ink);
+  overflow-x: hidden;
 }
 
 .lp-container {
@@ -1337,6 +1338,12 @@ textarea:focus {
   padding: 72px 22px 26px;
 }
 
+/* En flex-colonne centré, empêcher les enfants (boutons, sous-titre) de
+   dépasser la largeur du conteneur sur mobile. */
+.lp-hero-inner > * {
+  max-width: 100%;
+}
+
 .lp-badge {
   display: inline-flex;
   align-items: center;
@@ -1371,7 +1378,7 @@ textarea:focus {
   font-size: 0.8rem;
   letter-spacing: 1.5px;
   line-height: 2;
-  max-width: 560px;
+  max-width: min(560px, 100%);
   text-transform: uppercase;
 }
 
@@ -1523,6 +1530,115 @@ textarea:focus {
   color: var(--primary);
   font-weight: 700;
   font-size: 0.82rem;
+}
+
+/* Carrousel 3D du hero */
+.hero3d-wrap {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 26px 0 46px;
+}
+
+.hero3d {
+  position: relative;
+  width: 240px;
+  height: 352px;
+  perspective: 1300px;
+  flex-shrink: 0;
+}
+
+.hero3d-card {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 230px;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease, opacity 0.6s ease, filter 0.6s ease;
+  will-change: transform;
+}
+
+.hero3d-card .hero-card {
+  width: 100%;
+}
+
+.hero3d-card .hero-card.is-center {
+  transform: none;
+}
+
+.hero3d-card.is-active {
+  transform: translateX(-50%) rotateY(0deg) scale(1);
+  z-index: 3;
+  opacity: 1;
+}
+
+.hero3d-card.is-left {
+  transform: translateX(-122%) rotateY(42deg) scale(0.78);
+  z-index: 1;
+  opacity: 0.5;
+  filter: brightness(0.5);
+}
+
+.hero3d-card.is-right {
+  transform: translateX(22%) rotateY(-42deg) scale(0.78);
+  z-index: 1;
+  opacity: 0.5;
+  filter: brightness(0.5);
+}
+
+.hero3d-dots {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.hero3d-dots button {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.hero3d-dots button.on {
+  background: var(--primary);
+  width: 22px;
+  border-radius: 4px;
+}
+
+/* Menu mobile (burger) */
+.lp-mobile-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 22px 20px;
+  background: rgba(10, 10, 11, 0.98);
+  border-bottom: 1px solid var(--line);
+}
+
+.lp-mobile-menu a {
+  padding: 13px 4px;
+  color: var(--ink);
+  font-weight: 600;
+  border-bottom: 1px solid var(--line);
+}
+
+.lp-mobile-menu .lp-btn {
+  margin-top: 8px;
+}
+
+.lp-btn-block {
+  width: 100%;
 }
 
 /* Placeholder photo */
@@ -2175,8 +2291,13 @@ textarea:focus {
 /* ---------- Responsive ---------- */
 
 @media (max-width: 880px) {
-  .lp-nav-links {
+  .lp-nav-links,
+  .lp-nav-actions .lp-btn {
     display: none;
+  }
+
+  .lp-mobile-menu .lp-btn {
+    display: inline-flex;
   }
 
   .lp-burger {
@@ -2225,7 +2346,13 @@ textarea:focus {
   }
 
   .lp-hero h1 {
-    font-size: 2.1rem;
+    font-size: 1.9rem;
+  }
+
+  .lp-hero-sub {
+    font-size: 0.72rem;
+    letter-spacing: 0.6px;
+    line-height: 1.9;
   }
 
   .lp-section-head h2,
@@ -2241,11 +2368,24 @@ textarea:focus {
     gap: 8px;
   }
 
-  .hero-cards .hero-card:not(.is-center) {
+  .hero3d-wrap .hero-arrow {
     display: none;
   }
 
-  .hero-card {
-    width: 260px;
+  .hero3d {
+    width: 210px;
+    height: 330px;
+  }
+
+  .hero3d-card {
+    width: 208px;
+  }
+
+  .hero3d-card.is-left {
+    transform: translateX(-118%) rotateY(40deg) scale(0.74);
+  }
+
+  .hero3d-card.is-right {
+    transform: translateX(18%) rotateY(-40deg) scale(0.74);
   }
 }
