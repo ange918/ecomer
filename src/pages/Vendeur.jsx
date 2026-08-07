@@ -22,19 +22,23 @@ function Vendeur() {
     if (!session?.user) return;
     supabase
       .from('vendor_details')
-      .select('status')
+      .select('status, cip_path')
       .eq('id', session.user.id)
       .maybeSingle()
       .then(({ data }) => {
-        if (active) {
-          setStatus(data?.status ?? 'pending');
-          setLoading(false);
+        if (!active) return;
+        // Profil vendeur incomplet (pas de CIP) → onboarding.
+        if (!data || !data.cip_path) {
+          navigate('/vendeur/finaliser', { replace: true });
+          return;
         }
+        setStatus(data.status ?? 'pending');
+        setLoading(false);
       });
     return () => {
       active = false;
     };
-  }, [session]);
+  }, [session, navigate]);
 
   const handleLogout = async () => {
     await signOut();

@@ -1,16 +1,15 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { requestUserLogin, verifyEmailCode, loginWithPassword } from '../utils/auth';
+import { requestUserLogin, loginWithPassword } from '../utils/auth';
 
-// Connexion : onglet Client (code par email) / onglet Vendeur (mot de passe).
+// Connexion : onglet Client (lien par email) / onglet Vendeur (mot de passe).
 function Login() {
   const navigate = useNavigate();
   const [tab, setTab] = useState('client');
 
-  // Client (OTP)
+  // Client (lien magique)
   const [step, setStep] = useState('email');
   const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
 
   // Vendeur (mot de passe)
   const [vEmail, setVEmail] = useState('');
@@ -19,29 +18,15 @@ function Login() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const sendCode = async (e) => {
+  const sendLink = async (e) => {
     e.preventDefault();
     setError('');
     setBusy(true);
     try {
       await requestUserLogin(email.trim());
-      setStep('code');
+      setStep('sent');
     } catch (err) {
-      setError(err.message || "Impossible d'envoyer le code.");
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const verify = async (e) => {
-    e.preventDefault();
-    setError('');
-    setBusy(true);
-    try {
-      await verifyEmailCode(email.trim(), code.trim(), 'email');
-      navigate('/app', { replace: true });
-    } catch {
-      setError('Code incorrect ou expiré.');
+      setError(err.message || "Impossible d'envoyer le lien.");
     } finally {
       setBusy(false);
     }
@@ -88,7 +73,7 @@ function Login() {
         </div>
 
         {tab === 'client' && step === 'email' && (
-          <form onSubmit={sendCode}>
+          <form onSubmit={sendLink}>
             <label htmlFor="email">Email</label>
             <input
               id="email"
@@ -101,7 +86,7 @@ function Login() {
             />
             {error && <p className="form-error">{error}</p>}
             <button type="submit" className="btn btn-primary btn-block" disabled={busy}>
-              {busy ? 'Envoi…' : 'Recevoir un code'}
+              {busy ? 'Envoi…' : 'Recevoir un lien de connexion'}
             </button>
             <p className="auth-switch">
               Pas encore de compte ? <Link to="/inscription">S'inscrire</Link>
@@ -109,33 +94,22 @@ function Login() {
           </form>
         )}
 
-        {tab === 'client' && step === 'code' && (
-          <form onSubmit={verify}>
-            <p className="auth-hint">Code envoyé à <strong>{email}</strong>.</p>
-            <label htmlFor="code">Code reçu par email</label>
-            <input
-              id="code"
-              type="text"
-              inputMode="numeric"
-              maxLength={6}
-              placeholder="000000"
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-              required
-              autoFocus
-            />
-            {error && <p className="form-error">{error}</p>}
-            <button type="submit" className="btn btn-primary btn-block" disabled={busy}>
-              {busy ? 'Vérification…' : 'Se connecter'}
-            </button>
+        {tab === 'client' && step === 'sent' && (
+          <div className="vendor-done">
+            <i className="bx bx-envelope"></i>
+            <h2>Vérifiez votre email</h2>
+            <p>
+              Un lien de connexion a été envoyé à <strong>{email}</strong>. Cliquez dessus pour
+              vous connecter.
+            </p>
             <button
               type="button"
               className="btn btn-ghost btn-block"
-              onClick={() => { setStep('email'); setCode(''); setError(''); }}
+              onClick={() => { setStep('email'); setError(''); }}
             >
               Modifier l'email
             </button>
-          </form>
+          </div>
         )}
 
         {tab === 'vendeur' && (

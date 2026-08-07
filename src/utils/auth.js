@@ -12,6 +12,7 @@ export async function requestUserSignup({ email, firstName, lastName, whatsapp }
     email,
     options: {
       shouldCreateUser: true,
+      emailRedirectTo: `${window.location.origin}/app`,
       data: {
         role: 'user',
         first_name: firstName,
@@ -23,11 +24,14 @@ export async function requestUserSignup({ email, firstName, lastName, whatsapp }
   if (error) throw error;
 }
 
-// Renvoie un code à un email déjà connu (connexion client).
+// Envoie un lien de connexion à un email déjà connu (connexion client).
 export async function requestUserLogin(email) {
   const { error } = await supabase.auth.signInWithOtp({
     email,
-    options: { shouldCreateUser: false },
+    options: {
+      shouldCreateUser: false,
+      emailRedirectTo: `${window.location.origin}/app`,
+    },
   });
   if (error) throw error;
 }
@@ -47,6 +51,7 @@ export async function signUpVendor({ email, password, firstName, lastName, whats
     email,
     password,
     options: {
+      emailRedirectTo: `${window.location.origin}/vendeur`,
       data: {
         role: 'vendor',
         first_name: firstName,

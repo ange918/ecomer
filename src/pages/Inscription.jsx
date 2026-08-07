@@ -1,13 +1,11 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { requestUserSignup, verifyEmailCode } from '../utils/auth';
+import { Link } from 'react-router-dom';
+import { requestUserSignup } from '../utils/auth';
 
-// Inscription client : infos → code par email → compte confirmé.
+// Inscription client : infos → lien de confirmation envoyé par email.
 function Inscription() {
-  const navigate = useNavigate();
   const [step, setStep] = useState('form');
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', whatsapp: '' });
-  const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -24,23 +22,9 @@ function Inscription() {
         lastName: form.lastName.trim(),
         whatsapp: form.whatsapp.trim(),
       });
-      setStep('code');
+      setStep('sent');
     } catch (err) {
-      setError(err.message || "Impossible d'envoyer le code.");
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const verify = async (e) => {
-    e.preventDefault();
-    setError('');
-    setBusy(true);
-    try {
-      await verifyEmailCode(form.email.trim(), code.trim(), 'email');
-      navigate('/app', { replace: true });
-    } catch {
-      setError('Code incorrect ou expiré.');
+      setError(err.message || "Impossible d'envoyer le lien.");
     } finally {
       setBusy(false);
     }
@@ -80,27 +64,15 @@ function Inscription() {
             </p>
           </form>
         ) : (
-          <form onSubmit={verify}>
-            <p className="auth-hint">
-              Un code a été envoyé à <strong>{form.email}</strong>. Saisissez-le pour confirmer.
+          <div className="vendor-done">
+            <i className="bx bx-envelope"></i>
+            <h2>Vérifiez votre email</h2>
+            <p>
+              Un lien de confirmation a été envoyé à <strong>{form.email}</strong>. Ouvrez votre
+              boîte mail et cliquez sur le lien pour activer votre compte et vous connecter.
             </p>
-            <label htmlFor="code">Code reçu par email</label>
-            <input
-              id="code"
-              type="text"
-              inputMode="numeric"
-              maxLength={6}
-              placeholder="000000"
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-              required
-              autoFocus
-            />
-            {error && <p className="form-error">{error}</p>}
-            <button type="submit" className="btn btn-primary btn-block" disabled={busy}>
-              {busy ? 'Vérification…' : 'Confirmer mon compte'}
-            </button>
-          </form>
+            <p className="auth-hint">Pensez à vérifier vos spams.</p>
+          </div>
         )}
       </div>
     </div>
