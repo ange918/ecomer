@@ -329,20 +329,34 @@ function Landing() {
         </div>
       </section>
 
-      {/* Avantages */}
-      <section className="lp-section lp-alt">
-        <div className="lp-reveal">
-          <div className="lp-container">
-            <div className="lp-section-head">
-              <span className="lp-eyebrow">Pourquoi GazExpress</span>
-              <h2>Pensé pour votre confort</h2>
+      {/* Pourquoi GazExpress — pipeline en cartes étagées */}
+      <section className="lp-section lp-alt" id="why">
+        <div className="lp-container lp-reveal">
+          <div className="why-panel">
+            <div className="why-head">
+              <div>
+                <span className="lp-eyebrow">Pourquoi GazExpress</span>
+                <h2>Pensé pour votre confort</h2>
+              </div>
+              <span className="why-badge"><span className="pulse-dot"></span> 6 bonnes raisons</span>
             </div>
-            <div className="lp-features">
-              {FEATURES.map((f) => (
-                <div className="lp-feature" key={f.title}>
-                  <div className="lp-feature-icon"><i className={`bx ${f.icon}`}></i></div>
-                  <h3>{f.title}</h3>
-                  <p>{f.text}</p>
+            <div className="why-list">
+              {FEATURES.map((f, i) => (
+                <div className="why-row" style={{ '--i': i }} key={f.title}>
+                  <div className="why-num">
+                    <span className="why-step">Atout</span>
+                    <strong>{String(i + 1).padStart(2, '0')}</strong>
+                    <span className="why-bar">
+                      <span style={{ width: `${((i + 1) / FEATURES.length) * 100}%` }}></span>
+                    </span>
+                  </div>
+                  <div className="why-content">
+                    <div className="why-content-head">
+                      <i className={`bx ${f.icon}`}></i>
+                      <h3>{f.title}</h3>
+                    </div>
+                    <p>{f.text}</p>
+                  </div>
                 </div>
               ))}
             </div>

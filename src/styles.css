@@ -1955,6 +1955,156 @@ textarea:focus {
   line-height: 1.55;
 }
 
+/* Pourquoi GazExpress — pipeline en cartes étagées */
+.why-panel {
+  background: radial-gradient(circle at 100% 0%, rgba(198, 241, 53, 0.07), transparent 55%),
+    var(--card);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 30px;
+}
+
+.why-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.why-head h2 {
+  font-size: 1.7rem;
+}
+
+.why-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--elev);
+  border: 1px solid var(--line);
+  border-radius: 30px;
+  padding: 7px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.why-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.why-row {
+  display: flex;
+  align-items: stretch;
+  gap: 18px;
+  background: var(--elev);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--primary);
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin-left: calc(var(--i) * 26px);
+  transition: transform 0.16s ease, border-color 0.2s ease;
+}
+
+.why-row:hover {
+  transform: translateX(4px);
+  border-color: rgba(198, 241, 53, 0.4);
+}
+
+.why-num {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 92px;
+}
+
+.why-step {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.why-num strong {
+  font-size: 2.1rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--primary);
+}
+
+.why-bar {
+  display: block;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.why-bar span {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+.why-content {
+  border-left: 1px solid var(--line);
+  padding-left: 18px;
+}
+
+.why-content-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.why-content-head i {
+  font-size: 1.4rem;
+  color: var(--primary);
+}
+
+.why-content-head h3 {
+  font-size: 1.05rem;
+}
+
+.why-content p {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 700px) {
+  .why-row {
+    margin-left: 0;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px;
+  }
+
+  .why-num {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .why-bar {
+    flex: 1;
+    margin-top: 0;
+  }
+
+  .why-content {
+    border-left: none;
+    padding-left: 0;
+  }
+}
+
 /* Marques & accessoires */
 .lp-brands {
   display: flex;
