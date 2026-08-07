@@ -2515,3 +2515,132 @@ textarea:focus {
     transform: translateX(18%) rotateY(-40deg) scale(0.74);
   }
 }
+
+/* ---------- Auth (Supabase) ---------- */
+
+.loading {
+  min-height: 60vh;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  padding: 40px;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 6px;
+  background: var(--elev);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 18px;
+}
+
+.auth-tabs button {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 10px;
+  border-radius: 9px;
+}
+
+.auth-tabs button.active {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.auth-switch {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.auth-switch a {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-row .form-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.cip-drop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  border: 1.5px dashed var(--line);
+  border-radius: 14px;
+  background: var(--elev);
+  color: var(--muted);
+  cursor: pointer;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.cip-drop:hover {
+  border-color: var(--primary);
+}
+
+.cip-drop span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.cip-drop i {
+  font-size: 1.3rem;
+}
+
+.cip-preview {
+  width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+}
+
+.vendor-done,
+.vendor-status {
+  text-align: center;
+}
+
+.vendor-done > i,
+.vendor-status-icon {
+  font-size: 3rem;
+  color: var(--primary);
+}
+
+.vendor-status-icon.status-verified {
+  color: var(--ok);
+}
+
+.vendor-status-icon.status-rejected {
+  color: var(--danger);
+}
+
+.vendor-done h2,
+.vendor-status h2 {
+  margin: 10px 0 8px;
+}
+
+.vendor-done p,
+.vendor-status p {
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}

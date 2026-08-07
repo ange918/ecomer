@@ -1,33 +1,38 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../lib/AuthContext';
+import { updateProfile, signOut } from '../utils/auth';
 import {
-  getSession,
-  updateProfile,
-  logout,
   getAddresses,
   addAddress,
   removeAddress,
   setDefaultAddress,
-} from '../utils/auth';
+} from '../utils/addresses';
 import { getCurrentPosition } from '../utils/geo';
 
 // Profil : nom éditable, gestion des adresses, déconnexion.
 function Profile() {
   const navigate = useNavigate();
-  const [session] = useState(() => getSession());
-  const [name, setName] = useState(() => session?.name ?? '');
+  const { session, profile, refreshProfile } = useAuth();
+
+  const [firstName, setFirstName] = useState(() => profile?.first_name ?? '');
+  const [lastName, setLastName] = useState(() => profile?.last_name ?? '');
   const [saved, setSaved] = useState(false);
   const [addresses, setAddresses] = useState(() => getAddresses());
 
-  // Formulaire d'ajout d'adresse
   const [label, setLabel] = useState('');
   const [details, setDetails] = useState('');
   const [coords, setCoords] = useState(null);
   const [geoStatus, setGeoStatus] = useState('');
 
-  const saveName = (e) => {
+  const saveName = async (e) => {
     e.preventDefault();
-    updateProfile({ name: name.trim() });
+    if (!session?.user) return;
+    await updateProfile(session.user.id, {
+      first_name: firstName.trim(),
+      last_name: lastName.trim(),
+    });
+    refreshProfile();
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
   };
@@ -63,8 +68,8 @@ function Profile() {
     setAddresses(getAddresses());
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await signOut();
     navigate('/login', { replace: true });
   };
 
@@ -75,15 +80,23 @@ function Profile() {
       <form className="card" onSubmit={saveName}>
         <div className="profile-id">
           <i className="bx bxs-user-circle"></i>
-          <span>{session?.identifier}</span>
+          <span>{session?.user?.email}</span>
         </div>
-        <label htmlFor="name">Nom</label>
+        <label htmlFor="first-name">Prénom</label>
         <input
-          id="name"
+          id="first-name"
+          type="text"
+          placeholder="Votre prénom"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+        />
+        <label htmlFor="last-name">Nom</label>
+        <input
+          id="last-name"
           type="text"
           placeholder="Votre nom"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
         />
         <button type="submit" className="btn btn-primary btn-block">
           {saved ? 'Enregistré ✓' : 'Enregistrer'}

@@ -7,7 +7,7 @@ import {
   PAYMENT_METHODS,
   formatXOF,
 } from '../utils/catalog';
-import { getAddresses, getDefaultAddress, addAddress } from '../utils/auth';
+import { getAddresses, getDefaultAddress, addAddress } from '../utils/addresses';
 import { getCurrentPosition, estimateDistanceKm, computeDeliveryFee } from '../utils/geo';
 import { createOrder } from '../utils/orders';
 
