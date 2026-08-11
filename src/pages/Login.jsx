@@ -4,7 +4,7 @@ import AuthShell from '../components/AuthShell';
 import { loginWithPassword, getRole } from '../utils/auth';
 
 // Connexion unique (email + mot de passe). La redirection dépend du rôle :
-// vendeur → /vendeur, client → /app.
+// admin → /admin, client → /app.
 function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -19,7 +19,7 @@ function Login() {
     try {
       const { user } = await loginWithPassword(email.trim(), password);
       const role = await getRole(user.id);
-      navigate(role === 'vendor' ? '/vendeur' : '/app', { replace: true });
+      navigate(role === 'admin' ? '/admin' : '/app', { replace: true });
     } catch {
       setError('Email ou mot de passe incorrect.');
     } finally {
@@ -59,9 +59,6 @@ function Login() {
         </button>
         <p className="auth-switch">
           Pas encore de compte ? <Link to="/inscription">S'inscrire</Link>
-        </p>
-        <p className="auth-switch">
-          Vous avez une boutique ? <Link to="/devenir-vendeur">Devenir vendeur</Link>
         </p>
       </form>
     </AuthShell>

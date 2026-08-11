@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   getOrders,
@@ -11,18 +11,49 @@ import {
 // Historique des recharges + possibilité de recommander à l'identique.
 function History() {
   const navigate = useNavigate();
-  const [orders] = useState(() => getOrders());
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
 
-  const reorder = (order) => {
-    const fresh = createOrder({
-      brandId: order.brandId,
-      kg: order.kg,
-      type: order.type,
-      address: order.address,
-      paymentId: order.paymentId,
-    });
-    navigate(`/suivi/${fresh.id}`);
+  useEffect(() => {
+    let active = true;
+    getOrders()
+      .then((rows) => {
+        if (active) setOrders(rows);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const reorder = async (order) => {
+    setBusy(true);
+    try {
+      const fresh = await createOrder({
+        brandId: order.brandId,
+        kg: order.kg,
+        type: order.type,
+        address: order.address,
+        paymentId: order.paymentId,
+      });
+      navigate(`/suivi/${fresh.id}`);
+    } finally {
+      setBusy(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="page">
+        <h1 className="page-title">Historique</h1>
+        <p className="empty-hint">Chargement…</p>
+      </div>
+    );
+  }
 
   if (orders.length === 0) {
     return (
@@ -64,7 +95,12 @@ function History() {
               </div>
               <span className="order-total">{formatXOF(order.total)}</span>
             </Link>
-            <button type="button" className="btn btn-outline btn-sm" onClick={() => reorder(order)}>
+            <button
+              type="button"
+              className="btn btn-outline btn-sm"
+              disabled={busy}
+              onClick={() => reorder(order)}
+            >
               <i className="bx bx-repeat"></i> Recommander
             </button>
           </li>

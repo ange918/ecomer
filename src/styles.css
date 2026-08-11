@@ -2219,56 +2219,6 @@ textarea:focus {
   color: var(--muted);
 }
 
-/* Pour les vendeurs */
-.lp-vendors {
-  background: radial-gradient(circle at 100% 0%, rgba(198, 241, 53, 0.14), transparent 55%),
-    #0e0e10;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-
-.lp-vendors-inner {
-  align-items: center;
-}
-
-.lp-vendors h2 {
-  font-size: 1.9rem;
-  margin: 8px 0 16px;
-}
-
-.lp-vendors-text {
-  color: var(--muted);
-  line-height: 1.6;
-  margin-bottom: 18px;
-}
-
-.lp-list-lime li {
-  color: var(--ink);
-  margin-bottom: 4px;
-}
-
-.lp-vendors .lp-btn {
-  margin-top: 22px;
-}
-
-.lp-vendors-visual {
-  display: flex;
-  justify-content: center;
-}
-
-.lp-illus {
-  width: 100%;
-  max-width: 360px;
-  height: auto;
-}
-
-.lp-vendors-photo {
-  width: 100%;
-  max-width: 440px;
-  height: auto;
-  filter: drop-shadow(0 22px 44px rgba(0, 0, 0, 0.55));
-}
-
 /* Témoignages */
 .lp-testimonials {
   display: grid;
@@ -2525,7 +2475,6 @@ textarea:focus {
 
   .lp-section-head h2,
   .lp-section h2,
-  .lp-vendors h2,
   .lp-final-inner h2 {
     font-size: 1.5rem;
   }
@@ -2595,68 +2544,232 @@ textarea:focus {
   flex-direction: column;
 }
 
-.cip-drop {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 120px;
-  border: 1.5px dashed var(--line);
-  border-radius: 14px;
-  background: var(--elev);
-  color: var(--muted);
-  cursor: pointer;
-  overflow: hidden;
-  margin-bottom: 6px;
-}
-
-.cip-drop:hover {
-  border-color: var(--primary);
-}
-
-.cip-drop span {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
-}
-
-.cip-drop i {
-  font-size: 1.3rem;
-}
-
-.cip-preview {
-  width: 100%;
-  max-height: 220px;
-  object-fit: contain;
-}
-
-.vendor-done,
-.vendor-status {
+.vendor-done {
   text-align: center;
 }
 
-.vendor-done > i,
-.vendor-status-icon {
+.vendor-done > i {
   font-size: 3rem;
   color: var(--primary);
 }
 
-.vendor-status-icon.status-verified {
-  color: var(--ok);
-}
-
-.vendor-status-icon.status-rejected {
-  color: var(--danger);
-}
-
-.vendor-done h2,
-.vendor-status h2 {
+.vendor-done h2 {
   margin: 10px 0 8px;
 }
 
-.vendor-done p,
-.vendor-status p {
+.vendor-done p {
   color: var(--muted);
   line-height: 1.6;
   margin-bottom: 16px;
+}
+
+/* ---------- Admin (tableau de bord) ---------- */
+
+.admin {
+  max-width: 820px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 26px 20px 60px;
+}
+
+.admin-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.admin-eyebrow {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.admin-header h1 {
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.admin-badge {
+  background: var(--primary);
+  color: var(--on-primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.admin-sub {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.admin-error {
+  margin-bottom: 16px;
+}
+
+.admin-empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 60px 16px;
+}
+
+.admin-empty i {
+  font-size: 2.4rem;
+  opacity: 0.5;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.admin-list {
+  list-style: none;
+  display: grid;
+  gap: 14px;
+}
+
+.admin-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.admin-card.status-en_attente {
+  border-color: rgba(198, 241, 53, 0.5);
+}
+
+.admin-card.status-livree,
+.admin-card.status-annulee {
+  opacity: 0.72;
+}
+
+.admin-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.admin-card-top time {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.status-badge {
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--elev);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+
+.status-badge.status-en_attente {
+  background: rgba(198, 241, 53, 0.14);
+  color: var(--primary);
+  border-color: transparent;
+}
+
+.status-badge.status-acceptee,
+.status-badge.status-en_route {
+  background: rgba(90, 160, 255, 0.16);
+  color: #86b7ff;
+  border-color: transparent;
+}
+
+.status-badge.status-livree {
+  background: rgba(60, 200, 120, 0.16);
+  color: var(--ok);
+  border-color: transparent;
+}
+
+.status-badge.status-annulee {
+  background: rgba(255, 90, 90, 0.14);
+  color: var(--danger);
+  border-color: transparent;
+}
+
+.admin-op {
+  display: block;
+  font-size: 1.05rem;
+  margin-bottom: 12px;
+}
+
+.admin-meta {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 16px;
+  margin-bottom: 14px;
+}
+
+.admin-meta > div {
+  min-width: 0;
+}
+
+.admin-meta dt {
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.admin-meta dd {
+  font-size: 0.92rem;
+  word-break: break-word;
+}
+
+.admin-total {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.admin-link {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+
+/* Commande annulée (suivi client) */
+.tracking-cancelled {
+  text-align: center;
+  color: var(--muted);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 34px 18px;
+  margin-bottom: 16px;
+}
+
+.tracking-cancelled i {
+  font-size: 3rem;
+  color: var(--danger);
+  display: block;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 560px) {
+  .admin-meta {
+    grid-template-columns: 1fr;
+  }
 }

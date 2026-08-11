@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../lib/AuthContext';
 import {
@@ -12,8 +12,22 @@ import {
 // Tableau de bord d'accueil : commande active, raccourci de commande, dernières recharges.
 function Home() {
   const { profile } = useAuth();
-  const [activeOrder] = useState(() => getActiveOrder());
-  const [recentOrders] = useState(() => getOrders().slice(0, 3));
+  const [activeOrder, setActiveOrder] = useState(null);
+  const [recentOrders, setRecentOrders] = useState([]);
+
+  useEffect(() => {
+    let active = true;
+    Promise.all([getActiveOrder(), getOrders()])
+      .then(([act, all]) => {
+        if (!active) return;
+        setActiveOrder(act);
+        setRecentOrders(all.slice(0, 3));
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const greetingName = profile?.first_name?.trim() || 'à vous';
 

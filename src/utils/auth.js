@@ -1,5 +1,5 @@
-// Authentification réelle via Supabase (users passwordless par code email,
-// vendeurs email + mot de passe). Remplace l'ancienne auth mockée.
+// Authentification réelle via Supabase (client email + mot de passe).
+// L'admin est un compte dont le profil a `role = 'admin'` (défini côté base).
 
 import { supabase } from '../lib/supabaseClient';
 
@@ -24,7 +24,7 @@ export async function signUpClient({ email, password, firstName, lastName, whats
   return data;
 }
 
-// Rôle d'un utilisateur (pour rediriger après connexion).
+// Rôle d'un utilisateur (pour rediriger après connexion) : 'user' | 'admin'.
 export async function getRole(userId) {
   const { data } = await supabase
     .from('profiles')
@@ -34,56 +34,10 @@ export async function getRole(userId) {
   return data?.role ?? 'user';
 }
 
-// --- Inscription / connexion VENDEUR (email + mot de passe) -------------
-
-// Crée le compte vendeur ; un email de confirmation (code) est envoyé.
-export async function signUpVendor({ email, password, firstName, lastName, whatsapp }) {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: `${window.location.origin}/vendeur`,
-      data: {
-        role: 'vendor',
-        first_name: firstName,
-        last_name: lastName,
-        whatsapp,
-      },
-    },
-  });
-  if (error) throw error;
-  return data;
-}
-
 export async function loginWithPassword(email, password) {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) throw error;
   return data;
-}
-
-// --- CIP + détails vendeur (après ouverture de session) -----------------
-
-// Envoie la photo de CIP dans le bucket privé, dossier {uid}/cip.<ext>.
-export async function uploadCip(userId, file) {
-  const ext = (file.name?.split('.').pop() || 'jpg').toLowerCase();
-  const path = `${userId}/cip.${ext}`;
-  const { error } = await supabase.storage
-    .from('cip')
-    .upload(path, file, { upsert: true, contentType: file.type || 'image/jpeg' });
-  if (error) throw error;
-  return path;
-}
-
-export async function saveVendorDetails(userId, { cipPath, coords, locationLabel }) {
-  const { error } = await supabase.from('vendor_details').upsert({
-    id: userId,
-    cip_path: cipPath,
-    location_lat: coords?.lat ?? null,
-    location_lng: coords?.lng ?? null,
-    location_label: locationLabel || null,
-    status: 'pending',
-  });
-  if (error) throw error;
 }
 
 // --- Session / profil ---------------------------------------------------

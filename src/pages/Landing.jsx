@@ -7,7 +7,6 @@ import oryx from '../assets/products/oryx.png';
 import progaz from '../assets/products/progaz.png';
 import progazHaut from '../assets/products/progaz-haut.png';
 import beninPetro from '../assets/products/benin-petro.png';
-import oryxFamille from '../assets/products/oryx-famille.png';
 import raccord from '../assets/products/raccord.png';
 import rechaud from '../assets/products/rechaud.png';
 import supportBruleur from '../assets/products/support-bruleur.png';
@@ -18,9 +17,9 @@ gsap.registerPlugin(ScrollTrigger);
 // GazExpress : marché hyperlocal de livraison de gaz à domicile.
 
 const HERO_CARDS = [
-  { brand: 'Oryx', kg: '6 kg', price: '4 000 FCFA', vendor: 'Dépôt Cocody', eta: '≈ 30 min', image: oryx },
-  { brand: 'Progaz', kg: '6 kg', price: '3 900 FCFA', vendor: 'Gaz Express Yop', eta: '≈ 25 min', image: progaz },
-  { brand: 'Benin Petro', kg: '12,5 kg', price: '7 200 FCFA', vendor: 'Station Plateau', eta: '≈ 35 min', image: beninPetro },
+  { brand: 'Oryx', kg: '6 kg', price: '4 000 FCFA', eta: '≈ 30 min', image: oryx },
+  { brand: 'Progaz', kg: '6 kg', price: '3 900 FCFA', eta: '≈ 25 min', image: progaz },
+  { brand: 'Benin Petro', kg: '12,5 kg', price: '7 200 FCFA', eta: '≈ 35 min', image: beninPetro },
 ];
 
 const POPULAR = [
@@ -44,31 +43,31 @@ const BRANDS = [
 
 const STEPS = [
   { icon: 'bx-mobile-alt', title: 'Je commande', text: "J'indique la marque, la contenance et mon adresse en quelques secondes." },
-  { icon: 'bx-map-alt', title: 'Je vois les vendeurs proches', text: 'La plateforme affiche les boutiques disponibles autour de moi.' },
-  { icon: 'bx-check-circle', title: 'Le vendeur accepte', text: 'Le vendeur confirme la disponibilité et prend en charge ma commande.' },
-  { icon: 'bx-cycling', title: 'Paiement & livraison', text: 'Je paie (Mobile Money ou espèces) et je suis la livraison jusqu’à ma porte.' },
+  { icon: 'bx-box', title: 'On prépare', text: 'Votre recharge est préparée à la marque et à la contenance demandées.' },
+  { icon: 'bx-cycling', title: 'On vous livre', text: 'Un livreur vous apporte la bouteille directement à votre porte.' },
+  { icon: 'bx-wallet', title: 'Paiement & suivi', text: 'Je paie (Mobile Money ou espèces) et je suis la livraison en temps réel.' },
 ];
 
 const FEATURES = [
   { icon: 'bx-time-five', title: 'Rapide', text: 'Fini les allers-retours : votre gaz arrive à vous.' },
-  { icon: 'bx-map', title: 'Proximité', text: 'Des vendeurs proches, donc une livraison plus courte.' },
+  { icon: 'bx-map', title: 'À domicile', text: 'Livraison dans votre quartier, sans vous déplacer.' },
   { icon: 'bx-wallet', title: 'Paiement flexible', text: 'Mobile Money (MoMo, Moov, Wave) ou espèces à la livraison.' },
-  { icon: 'bx-navigation', title: 'Suivi en temps réel', text: 'Suivez votre livreur sur la carte jusqu’à son arrivée.' },
-  { icon: 'bx-shield-quarter', title: 'Sécurité', text: 'Vendeurs vérifiés et manipulation conforme aux règles.' },
+  { icon: 'bx-navigation', title: 'Suivi en temps réel', text: 'Suivez l’avancement de votre commande jusqu’à son arrivée.' },
+  { icon: 'bx-shield-quarter', title: 'Sécurité', text: 'Bouteilles conformes et manipulation dans les règles.' },
   { icon: 'bx-refresh', title: 'Échange simplifié', text: 'Bouteille vide reprise contre une pleine, sans effort.' },
 ];
 
 const TESTIMONIALS = [
   { name: 'Aïcha K.', role: 'Cliente, Cocody', text: 'Panne de gaz un dimanche soir : commande passée, livrée en 30 min. Un vrai soulagement !' },
-  { name: 'Moussa D.', role: 'Vendeur partenaire', text: 'GazExpress m’amène des clients que je n’aurais jamais touchés. Mes ventes ont augmenté.' },
+  { name: 'Koffi A.', role: 'Client, Plateau', text: 'Je commande en deux minutes et je suis livré au bureau. Plus besoin de m’organiser à l’avance.' },
   { name: 'Fatou S.', role: 'Cliente, Yopougon', text: 'Plus besoin de porter la bouteille sous la pluie. Je recommande en deux clics.' },
 ];
 
 const FAQ = [
-  { q: 'Comment fonctionne la livraison ?', a: 'Vous commandez depuis l’application, un vendeur proche accepte votre commande et vous livre à domicile. Vous suivez la livraison en temps réel.' },
+  { q: 'Comment fonctionne la livraison ?', a: 'Vous commandez depuis l’application, nous préparons votre bouteille et un livreur vous l’apporte à domicile. Vous suivez la livraison en temps réel.' },
   { q: 'Quels moyens de paiement sont acceptés ?', a: 'Le paiement Mobile Money (MTN MoMo, Moov Money, Wave) ou en espèces à la livraison.' },
-  { q: 'Puis-je échanger ma bouteille vide ?', a: 'Oui. Le vendeur reprend votre bouteille vide et vous remet une bouteille pleine de même marque : vous ne payez que la recharge.' },
-  { q: 'Je tiens une boutique de gaz, comment vendre sur GazExpress ?', a: 'Cliquez sur « Devenir vendeur » : vous recevez les commandes des clients proches et développez vos ventes.' },
+  { q: 'Puis-je échanger ma bouteille vide ?', a: 'Oui. Le livreur reprend votre bouteille vide et vous remet une bouteille pleine de même marque : vous ne payez que la recharge.' },
+  { q: 'Dans quelles zones livrez-vous ?', a: 'La livraison couvre les principaux quartiers de la ville. Indiquez votre adresse à la commande pour vérifier la disponibilité.' },
 ];
 
 function HeroCard({ card, center }) {
@@ -80,7 +79,7 @@ function HeroCard({ card, center }) {
         <button type="button" className="hero-card-heart" aria-label="Favori"><i className="bx bx-heart"></i></button>
         {center && <span className="hero-card-cta">Commander</span>}
         <div className="hero-card-info">
-          <span className="hero-card-vendor"><i className="bx bxs-store"></i> {card.vendor}</span>
+          <span className="hero-card-vendor"><i className="bx bx-purchase-tag-alt"></i> Livré chez vous</span>
           <div className="hero-card-meta">
             <strong>{card.brand} · {card.kg}</strong>
             <span className="hero-card-price">{card.price}</span>
@@ -203,7 +202,7 @@ function Landing() {
           <nav className="lp-nav-links">
             <a href="#top">Accueil</a>
             <a href="#how">Comment ça marche</a>
-            <a href="#vendors">Vendeurs</a>
+            <a href="#why">Pourquoi nous</a>
             <a href="#faq">FAQ</a>
           </nav>
           <div className="lp-nav-actions">
@@ -227,7 +226,7 @@ function Landing() {
           <nav className="lp-mobile-menu">
             <a href="#top" onClick={() => setMenuOpen(false)}>Accueil</a>
             <a href="#how" onClick={() => setMenuOpen(false)}>Comment ça marche</a>
-            <a href="#vendors" onClick={() => setMenuOpen(false)}>Vendeurs</a>
+            <a href="#why" onClick={() => setMenuOpen(false)}>Pourquoi nous</a>
             <a href="#faq" onClick={() => setMenuOpen(false)}>FAQ</a>
             <Link to="/login" className="lp-btn lp-btn-ghost lp-btn-block" onClick={() => setMenuOpen(false)}>
               Se connecter
@@ -250,12 +249,12 @@ function Landing() {
           <span className="lp-badge"><i className="bx bx-bolt-circle"></i> Livraison de gaz à la demande</span>
           <h1>Votre gaz livré<br /><span className="lp-accent">à domicile</span></h1>
           <p className="lp-hero-sub">
-            UNE PANNE DE GAZ AU MAUVAIS MOMENT ? UN VENDEUR PROCHE DE CHEZ VOUS
-            VOUS LIVRE EN QUELQUES CLICS — SANS DÉPLACEMENT.
+            UNE PANNE DE GAZ AU MAUVAIS MOMENT ? COMMANDEZ VOTRE RECHARGE
+            ET FAITES-VOUS LIVRER EN QUELQUES CLICS — SANS DÉPLACEMENT.
           </p>
           <div className="lp-hero-cta">
             <Link to="/inscription" className="lp-btn lp-btn-primary lp-btn-lg">Commander <i className="bx bx-up-arrow-alt lp-rot"></i></Link>
-            <a href="#vendors" className="lp-btn lp-btn-outline lp-btn-lg">Devenir vendeur <i className="bx bx-up-arrow-alt lp-rot"></i></a>
+            <Link to="/login" className="lp-btn lp-btn-outline lp-btn-lg">Se connecter <i className="bx bx-log-in lp-rot"></i></Link>
           </div>
         </div>
 
@@ -297,10 +296,10 @@ function Landing() {
           </div>
           <div className="lp-pscard lp-pscard-accent">
             <span className="lp-eyebrow">La solution</span>
-            <h2>GazExpress vous connecte au vendeur le plus proche</h2>
+            <h2>GazExpress vous livre le gaz à domicile</h2>
             <ul className="lp-pslist">
               <li><span className="ps-ico ps-ico-check"><i className="bx bx-check"></i></span> Commandez depuis votre téléphone</li>
-              <li><span className="ps-ico ps-ico-check"><i className="bx bx-check"></i></span> Un vendeur proche accepte et vous livre</li>
+              <li><span className="ps-ico ps-ico-check"><i className="bx bx-check"></i></span> Nous préparons et livrons votre commande</li>
               <li><span className="ps-ico ps-ico-check"><i className="bx bx-check"></i></span> Vous suivez la livraison en temps réel</li>
             </ul>
           </div>
@@ -385,38 +384,12 @@ function Landing() {
         </div>
       </section>
 
-      {/* Pour les vendeurs */}
-      <section className="lp-section lp-vendors" id="vendors">
-        <div className="lp-container lp-two-col lp-vendors-inner lp-reveal">
-          <div>
-            <span className="lp-eyebrow lp-eyebrow-lime">Vous avez une boutique de gaz ?</span>
-            <h2>Devenez vendeur et développez vos ventes</h2>
-            <p className="lp-vendors-text">
-              Vous vendez du gaz ou des accessoires ? Rejoignez GazExpress, recevez les
-              commandes des clients proches de vous et augmentez votre chiffre d'affaires,
-              sans changer votre façon de travailler.
-            </p>
-            <ul className="lp-pslist">
-              <li><span className="ps-ico ps-ico-check"><i className="bx bx-check"></i></span> Touchez plus de clients dans votre zone</li>
-              <li><span className="ps-ico ps-ico-check"><i className="bx bx-check"></i></span> Gérez vos commandes et votre stock facilement</li>
-              <li><span className="ps-ico ps-ico-check"><i className="bx bx-check"></i></span> Paiements suivis, livraisons organisées</li>
-            </ul>
-            <Link to="/devenir-vendeur" className="lp-btn lp-btn-primary lp-btn-lg">
-              <i className="bx bxs-store"></i> Devenir vendeur
-            </Link>
-          </div>
-          <div className="lp-vendors-visual">
-            <img src={oryxFamille} alt="Bouteilles de gaz de toutes tailles" className="lp-vendors-photo" />
-          </div>
-        </div>
-      </section>
-
       {/* Témoignages */}
       <section className="lp-section lp-alt">
         <div className="lp-container lp-reveal">
           <div className="lp-section-head">
             <span className="lp-eyebrow">Ils nous font confiance</span>
-            <h2>Des clients et vendeurs satisfaits</h2>
+            <h2>Des clients satisfaits</h2>
           </div>
           <div className="lp-testimonials">
             {TESTIMONIALS.map((t) => (
@@ -457,10 +430,10 @@ function Landing() {
       <section className="lp-final-cta">
         <div className="lp-container lp-final-inner">
           <h2>Ne manquez plus jamais de gaz</h2>
-          <p>Rejoignez GazExpress et faites-vous livrer par un vendeur proche de chez vous.</p>
+          <p>Rejoignez GazExpress et faites-vous livrer votre gaz à domicile.</p>
           <div className="lp-hero-cta">
-            <Link to="/login" className="lp-btn lp-btn-primary lp-btn-lg">S'inscrire / Se connecter</Link>
-            <a href="#vendors" className="lp-btn lp-btn-outline lp-btn-lg">Devenir vendeur</a>
+            <Link to="/inscription" className="lp-btn lp-btn-primary lp-btn-lg">S'inscrire</Link>
+            <Link to="/login" className="lp-btn lp-btn-outline lp-btn-lg">Se connecter</Link>
           </div>
         </div>
       </section>
@@ -473,7 +446,7 @@ function Landing() {
               <span className="lp-logo"><i className="bx bxs-flame"></i></span>
               GazExpress
             </a>
-            <p>Le gaz domestique livré à domicile, par des vendeurs proches de vous.</p>
+            <p>Le gaz domestique commandé en un clic et livré rapidement à domicile.</p>
             <div className="lp-socials">
               <a href="#top" aria-label="Facebook"><i className="bx bxl-facebook"></i></a>
               <a href="#top" aria-label="Instagram"><i className="bx bxl-instagram"></i></a>
@@ -484,13 +457,13 @@ function Landing() {
             <div>
               <h4>Produit</h4>
               <a href="#how">Comment ça marche</a>
+              <a href="#why">Pourquoi nous</a>
               <a href="#faq">FAQ</a>
-              <Link to="/login">Se connecter</Link>
             </div>
             <div>
-              <h4>Vendeurs</h4>
-              <a href="#vendors">Devenir vendeur</a>
-              <Link to="/login">Espace vendeur</Link>
+              <h4>Compte</h4>
+              <Link to="/inscription">S'inscrire</Link>
+              <Link to="/login">Se connecter</Link>
             </div>
             <div>
               <h4>Support</h4>
