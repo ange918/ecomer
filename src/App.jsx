@@ -1,12 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import RequireAuth from './components/RequireAuth';
+import RequireAdmin from './components/RequireAdmin';
 import AppNav from './components/AppNav';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Inscription from './pages/Inscription';
-import DevenirVendeur from './pages/DevenirVendeur';
-import Vendeur from './pages/Vendeur';
-import VendeurFinaliser from './pages/VendeurFinaliser';
+import Admin from './pages/Admin';
 import Home from './pages/Home';
 import NewOrder from './pages/NewOrder';
 import Tracking from './pages/Tracking';
@@ -36,21 +35,12 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/inscription" element={<Inscription />} />
-        <Route path="/devenir-vendeur" element={<DevenirVendeur />} />
         <Route
-          path="/vendeur"
+          path="/admin"
           element={
-            <RequireAuth>
-              <Vendeur />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/vendeur/finaliser"
-          element={
-            <RequireAuth>
-              <VendeurFinaliser />
-            </RequireAuth>
+            <RequireAdmin>
+              <Admin />
+            </RequireAdmin>
           }
         />
         <Route element={<AppLayout />}>

@@ -1,88 +1,165 @@
-// Commandes (MVP) : création, historique et cycle de statut, en localStorage.
-// Le cycle est simulé côté client (aucun dépôt/livreur réel ne répond).
+// Commandes : création et suivi via Supabase (table `orders`).
+// L'utilisateur crée une commande ; l'administrateur la reçoit dans son tableau
+// de bord et fait avancer le statut (accepter → en route → livrée).
 
-import { readJSON, writeJSON, makeId } from './storage';
+import { supabase } from '../lib/supabaseClient';
 import { getBrand, getPrice, formatXOF } from './catalog';
 import { estimateDistanceKm, computeDeliveryFee } from './geo';
-
-const ORDERS_KEY = 'gazexpress_orders';
 
 // Cycle de vie d'une commande, dans l'ordre.
 export const ORDER_STATUSES = ['en_attente', 'acceptee', 'en_route', 'livree'];
 
 export const STATUS_LABELS = {
-  en_attente: 'En attente de dépôt',
+  en_attente: 'En attente',
   acceptee: 'Acceptée',
   en_route: 'En route',
   livree: 'Livrée',
+  annulee: 'Annulée',
 };
 
 export function isActiveStatus(status) {
   return status !== 'livree' && status !== 'annulee';
 }
 
-export function getOrders() {
-  // Les plus récentes en premier.
-  return readJSON(ORDERS_KEY, []).sort(
-    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-  );
-}
-
-export function getOrderById(id) {
-  return getOrders().find((o) => o.id === id) ?? null;
-}
-
-// Commande en cours (non livrée), s'il y en a une.
-export function getActiveOrder() {
-  return getOrders().find((o) => isActiveStatus(o.status)) ?? null;
+// Convertit une ligne Supabase (snake_case) en objet commande utilisé par l'UI.
+function fromRow(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    userId: row.user_id,
+    clientName: row.client_name,
+    clientWhatsapp: row.client_whatsapp,
+    brandId: row.brand_id,
+    brandName: row.brand_name,
+    kg: row.kg,
+    type: row.type,
+    address: {
+      label: row.address_label,
+      details: row.address_details,
+      coords:
+        row.address_lat != null && row.address_lng != null
+          ? { lat: row.address_lat, lng: row.address_lng }
+          : null,
+    },
+    paymentId: row.payment_id,
+    productPrice: row.product_price,
+    deliveryFee: row.delivery_fee,
+    total: row.total,
+    distanceKm: row.distance_km,
+    status: row.status,
+    rating: row.rating,
+    createdAt: row.created_at,
+  };
 }
 
 // Crée une commande à partir de la sélection client et calcule les montants.
-export function createOrder({ brandId, kg, type, address, paymentId }) {
+// Snapshot du nom + WhatsApp du client pour que l'admin puisse le contacter.
+export async function createOrder({ brandId, kg, type, address, paymentId }) {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const user = sessionData.session?.user;
+  if (!user) throw new Error('Vous devez être connecté pour commander.');
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('first_name, last_name, whatsapp')
+    .eq('id', user.id)
+    .maybeSingle();
+
   const brand = getBrand(brandId);
   const productPrice = getPrice(brandId, kg, type);
   const distance = estimateDistanceKm(address?.coords);
   const deliveryFee = computeDeliveryFee(distance);
+  const clientName = [profile?.first_name, profile?.last_name]
+    .filter(Boolean)
+    .join(' ')
+    .trim();
 
-  const order = {
-    id: makeId(),
-    brandId,
-    brandName: brand?.name ?? brandId,
-    kg,
-    type, // 'echange' | 'neuf'
-    address,
-    paymentId,
-    productPrice,
-    deliveryFee,
-    total: productPrice + deliveryFee,
-    distanceKm: Math.round(distance * 10) / 10,
-    status: 'en_attente',
-    rating: null,
-    createdAt: new Date().toISOString(),
-  };
-
-  writeJSON(ORDERS_KEY, [order, ...readJSON(ORDERS_KEY, [])]);
-  return order;
+  const { data, error } = await supabase
+    .from('orders')
+    .insert({
+      user_id: user.id,
+      client_name: clientName || null,
+      client_whatsapp: profile?.whatsapp ?? null,
+      brand_id: brandId,
+      brand_name: brand?.name ?? brandId,
+      kg,
+      type,
+      address_label: address?.label ?? null,
+      address_details: address?.details ?? null,
+      address_lat: address?.coords?.lat ?? null,
+      address_lng: address?.coords?.lng ?? null,
+      payment_id: paymentId,
+      product_price: productPrice,
+      delivery_fee: deliveryFee,
+      total: productPrice + deliveryFee,
+      distance_km: Math.round(distance * 10) / 10,
+      status: 'en_attente',
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return fromRow(data);
 }
 
-// Fait avancer la commande d'un cran dans le cycle de statut.
-export function advanceStatus(id) {
-  const orders = readJSON(ORDERS_KEY, []);
-  const next = orders.map((o) => {
-    if (o.id !== id) return o;
-    const idx = ORDER_STATUSES.indexOf(o.status);
-    if (idx < 0 || idx >= ORDER_STATUSES.length - 1) return o;
-    return { ...o, status: ORDER_STATUSES[idx + 1] };
-  });
-  writeJSON(ORDERS_KEY, next);
-  return next.find((o) => o.id === id) ?? null;
+// Commandes du client connecté, les plus récentes en premier (RLS).
+export async function getOrders() {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map(fromRow);
 }
 
-export function rateOrder(id, rating) {
-  const next = readJSON(ORDERS_KEY, []).map((o) =>
-    o.id === id ? { ...o, rating } : o
-  );
-  writeJSON(ORDERS_KEY, next);
+export async function getOrderById(id) {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
+  if (error) throw error;
+  return fromRow(data);
+}
+
+// Commande en cours (non livrée / non annulée), s'il y en a une.
+export async function getActiveOrder() {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .not('status', 'in', '(livree,annulee)')
+    .order('created_at', { ascending: false })
+    .limit(1);
+  if (error) throw error;
+  return fromRow((data ?? [])[0]);
+}
+
+export async function rateOrder(id, rating) {
+  const { error } = await supabase.from('orders').update({ rating }).eq('id', id);
+  if (error) throw error;
+}
+
+// --- Administration -----------------------------------------------------
+
+// Toutes les commandes (l'admin y a accès via RLS).
+export async function getAllOrders() {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map(fromRow);
+}
+
+// Fixe le statut d'une commande (action admin).
+export async function setOrderStatus(id, status) {
+  const { data, error } = await supabase
+    .from('orders')
+    .update({ status })
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw error;
+  return fromRow(data);
 }
 
 // Libellé lisible de l'opération.

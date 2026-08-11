@@ -26,6 +26,8 @@ function NewOrder() {
   const [addressId, setAddressId] = useState(() => getDefaultAddress()?.id ?? null);
 
   const [paymentId, setPaymentId] = useState(PAYMENT_METHODS[0].id);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const contenances = useMemo(() => getContenances(brandId), [brandId]);
   const selectedAddress = addresses.find((a) => a.id === addressId) ?? null;
@@ -50,9 +52,16 @@ function NewOrder() {
     (step === 2 && !!paymentId) ||
     step === 3;
 
-  const handleConfirm = () => {
-    const order = createOrder({ brandId, kg, type, address: selectedAddress, paymentId });
-    navigate(`/suivi/${order.id}`, { replace: true });
+  const handleConfirm = async () => {
+    setError('');
+    setSubmitting(true);
+    try {
+      const order = await createOrder({ brandId, kg, type, address: selectedAddress, paymentId });
+      navigate(`/suivi/${order.id}`, { replace: true });
+    } catch (err) {
+      setError(err.message || 'Commande impossible. Réessayez.');
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -218,11 +227,17 @@ function NewOrder() {
             Continuer
           </button>
         ) : (
-          <button type="button" className="btn btn-primary" onClick={handleConfirm}>
-            Confirmer la commande
+          <button
+            type="button"
+            className="btn btn-primary"
+            disabled={submitting}
+            onClick={handleConfirm}
+          >
+            {submitting ? 'Envoi…' : 'Confirmer la commande'}
           </button>
         )}
       </div>
+      {error && <p className="form-error">{error}</p>}
     </div>
   );
 }
