@@ -36,7 +36,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/inscription" element={<Inscription />} />
         <Route
-          path="/admin"
+          path="/akonde"
           element={
             <RequireAdmin>
               <Admin />

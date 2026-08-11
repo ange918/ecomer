@@ -71,7 +71,11 @@ create policy orders_update_own_or_admin on public.orders
 
 -- 4. Nettoyage vendeur (plus utilisé).
 drop table if exists public.vendor_details cascade;
-delete from storage.buckets where id = 'cip';
+-- Le bucket privé « cip » n'est plus utilisé ; sa suppression se fait via la
+-- Storage API (le SQL direct est bloqué). À retirer manuellement si besoin.
 
--- 5. Désigner l'administrateur (le compte doit s'être inscrit au moins une fois).
-update public.profiles set role = 'admin' where email = 'thee40775@gmail.com';
+-- 5. Compte administrateur.
+-- Le compte admin est provisionné hors de ce fichier (insertion dans auth.users
+-- avec un mot de passe chiffré + identity email), afin de ne pas versionner le
+-- mot de passe. Son profil obtient role='admin' via le trigger handle_new_user
+-- (raw_user_meta_data.role = 'admin').
