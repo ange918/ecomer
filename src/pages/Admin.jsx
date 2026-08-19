@@ -87,7 +87,7 @@ function Admin() {
 
   const handleLogout = async () => {
     await signOut();
-    navigate('/login', { replace: true });
+    navigate('/akonde', { replace: true });
   };
 
   const pending = orders.filter((o) => o.status === 'en_attente').length;

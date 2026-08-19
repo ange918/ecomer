@@ -1,19 +1,16 @@
-import { Navigate } from 'react-router-dom';
 import { useAuth } from '../lib/AuthContext';
+import AdminLogin from '../pages/AdminLogin';
 
-// Garde de route admin : attend le chargement, redirige vers /login si pas de
-// session, et vers /app si l'utilisateur n'est pas administrateur.
+// Garde de route admin : tant que l'utilisateur n'est pas administrateur, on
+// affiche l'écran de mot de passe (accès par mot de passe seul, sans email).
 function RequireAdmin({ children }) {
-  const { session, profile, loading } = useAuth();
+  const { profile, loading } = useAuth();
 
   if (loading) {
     return <div className="container loading">Chargement…</div>;
   }
-  if (!session) {
-    return <Navigate to="/login" replace />;
-  }
   if (profile?.role !== 'admin') {
-    return <Navigate to="/app" replace />;
+    return <AdminLogin />;
   }
   return children;
 }
