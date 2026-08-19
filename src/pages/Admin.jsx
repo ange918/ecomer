@@ -34,6 +34,10 @@ function mapLink(coords) {
   return coords ? `https://www.google.com/maps?q=${coords.lat},${coords.lng}` : null;
 }
 
+function mapEmbed(coords) {
+  return `https://www.google.com/maps?q=${coords.lat},${coords.lng}&z=16&output=embed`;
+}
+
 function Admin() {
   const navigate = useNavigate();
   const { profile } = useAuth();
@@ -41,6 +45,7 @@ function Admin() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [busyId, setBusyId] = useState(null);
+  const [mapOpenId, setMapOpenId] = useState(null);
 
   const load = useCallback(async () => {
     try {
@@ -146,21 +151,6 @@ function Admin() {
                     </dd>
                   </div>
                   <div>
-                    <dt>Adresse</dt>
-                    <dd>
-                      {o.address?.label || '—'}
-                      {o.address?.details ? ` — ${o.address.details}` : ''}
-                      {map && (
-                        <>
-                          {' '}
-                          <a href={map} target="_blank" rel="noreferrer" className="admin-link">
-                            <i className="bx bx-map"></i> Carte
-                          </a>
-                        </>
-                      )}
-                    </dd>
-                  </div>
-                  <div>
                     <dt>Paiement</dt>
                     <dd>{getPaymentMethod(o.paymentId)?.name || o.paymentId || '—'}</dd>
                   </div>
@@ -169,6 +159,56 @@ function Admin() {
                     <dd className="admin-total">{formatXOF(o.total)}</dd>
                   </div>
                 </dl>
+
+                <div className="admin-loc">
+                  <div className="admin-loc-head">
+                    <i className="bx bx-map"></i>
+                    <div>
+                      <strong>{o.address?.label || 'Localisation'}</strong>
+                      {o.address?.details && <span>{o.address.details}</span>}
+                      {o.address?.coords && (
+                        <small>
+                          {o.address.coords.lat.toFixed(5)}, {o.address.coords.lng.toFixed(5)}
+                        </small>
+                      )}
+                    </div>
+                  </div>
+                  {o.address?.coords ? (
+                    <>
+                      <div className="admin-loc-actions">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline"
+                          onClick={() => setMapOpenId(mapOpenId === o.id ? null : o.id)}
+                        >
+                          <i className="bx bx-map-alt"></i>
+                          {mapOpenId === o.id ? 'Masquer la carte' : 'Voir sur la carte'}
+                        </button>
+                        <a
+                          href={map}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="btn btn-sm btn-ghost"
+                        >
+                          <i className="bx bx-navigation"></i> Google Maps
+                        </a>
+                      </div>
+                      {mapOpenId === o.id && (
+                        <iframe
+                          className="admin-map"
+                          title={`Carte ${o.id}`}
+                          src={mapEmbed(o.address.coords)}
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                        ></iframe>
+                      )}
+                    </>
+                  ) : (
+                    <p className="admin-loc-missing">
+                      <i className="bx bx-error-circle"></i> Aucune position GPS fournie.
+                    </p>
+                  )}
+                </div>
 
                 {actions.length > 0 && (
                   <div className="admin-actions">
