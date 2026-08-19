@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import RequireAuth from './components/RequireAuth';
-import RequireAdmin from './components/RequireAdmin';
 import AppNav from './components/AppNav';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -35,14 +34,9 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/inscription" element={<Inscription />} />
-        <Route
-          path="/akonde"
-          element={
-            <RequireAdmin>
-              <Admin />
-            </RequireAdmin>
-          }
-        />
+        {/* Tableau de bord admin : URL secrète, accès libre (protégé côté
+            Supabase par une Edge Function à clé privilégiée). */}
+        <Route path="/akonde-4f7q9x2k" element={<Admin />} />
         <Route element={<AppLayout />}>
           <Route path="/app" element={<Home />} />
           <Route path="/commander" element={<NewOrder />} />

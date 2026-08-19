@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthShell from '../components/AuthShell';
-import { loginWithPassword, getRole } from '../utils/auth';
+import { loginWithPassword } from '../utils/auth';
 
-// Connexion unique (email + mot de passe). La redirection dépend du rôle :
-// admin → /akonde, client → /app.
+// Connexion client (email + mot de passe).
 function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -17,9 +16,8 @@ function Login() {
     setError('');
     setBusy(true);
     try {
-      const { user } = await loginWithPassword(email.trim(), password);
-      const role = await getRole(user.id);
-      navigate(role === 'admin' ? '/akonde' : '/app', { replace: true });
+      await loginWithPassword(email.trim(), password);
+      navigate('/app', { replace: true });
     } catch {
       setError('Email ou mot de passe incorrect.');
     } finally {

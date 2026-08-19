@@ -139,25 +139,23 @@ export async function rateOrder(id, rating) {
 }
 
 // --- Administration -----------------------------------------------------
+// Le tableau de bord passe par l'Edge Function `admin-orders` (clé privilégiée
+// côté Supabase) : aucun accès admin ni secret n'est nécessaire côté client.
 
-// Toutes les commandes (l'admin y a accès via RLS).
+// Toutes les commandes.
 export async function getAllOrders() {
-  const { data, error } = await supabase
-    .from('orders')
-    .select('*')
-    .order('created_at', { ascending: false });
+  const { data, error } = await supabase.functions.invoke('admin-orders', {
+    body: { action: 'list' },
+  });
   if (error) throw error;
   return (data ?? []).map(fromRow);
 }
 
-// Fixe le statut d'une commande (action admin).
+// Fixe le statut d'une commande.
 export async function setOrderStatus(id, status) {
-  const { data, error } = await supabase
-    .from('orders')
-    .update({ status })
-    .eq('id', id)
-    .select()
-    .single();
+  const { data, error } = await supabase.functions.invoke('admin-orders', {
+    body: { action: 'setStatus', id, status },
+  });
   if (error) throw error;
   return fromRow(data);
 }
