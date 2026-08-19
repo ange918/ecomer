@@ -150,8 +150,19 @@ function Admin() {
           </div>
         </header>
 
-        {/* Filtres en ligne (mobile) */}
-        <FilterNav counts={counts} value={filter} onChange={setFilter} className="admin-filters-row" />
+        {/* Filtre (mobile) : menu déroulant */}
+        <select
+          className="admin-filter-select"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          aria-label="Filtrer les commandes"
+        >
+          {FILTERS.map((f) => (
+            <option key={f.key} value={f.key}>
+              {f.label} ({counts[f.key] ?? 0})
+            </option>
+          ))}
+        </select>
 
         {error && <p className="form-error admin-error">{error}</p>}
 
