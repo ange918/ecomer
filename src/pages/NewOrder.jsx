@@ -7,7 +7,7 @@ import {
   PAYMENT_METHODS,
   formatXOF,
 } from '../utils/catalog';
-import { getAddresses, getDefaultAddress, addAddress } from '../utils/addresses';
+import { getAddresses, getDefaultAddress, addAddress, updateAddress } from '../utils/addresses';
 import { getCurrentPosition, estimateDistanceKm, computeDeliveryFee } from '../utils/geo';
 import { createOrder } from '../utils/orders';
 
@@ -48,7 +48,7 @@ function NewOrder() {
 
   const canContinue =
     (step === 0 && brandId && kg && type) ||
-    (step === 1 && !!selectedAddress) ||
+    (step === 1 && !!selectedAddress?.coords) ||
     (step === 2 && !!paymentId) ||
     step === 3;
 
@@ -143,6 +143,7 @@ function NewOrder() {
             setAddresses(getAddresses());
             setAddressId(entry.id);
           }}
+          onUpdated={() => setAddresses(getAddresses())}
         />
       )}
 
@@ -242,13 +243,17 @@ function NewOrder() {
   );
 }
 
-// Sous-composant : sélection / ajout d'adresse (avec géolocalisation navigateur).
-function AddressStep({ addresses, addressId, onSelect, onAdded }) {
+// Sous-composant : sélection / ajout d'adresse. La position GPS est obligatoire
+// (nécessaire à la livraison) : pas d'adresse enregistrée sans coordonnées.
+function AddressStep({ addresses, addressId, onSelect, onAdded, onUpdated }) {
   const [adding, setAdding] = useState(addresses.length === 0);
   const [label, setLabel] = useState('');
   const [details, setDetails] = useState('');
   const [coords, setCoords] = useState(null);
   const [geoStatus, setGeoStatus] = useState('');
+  const [fixStatus, setFixStatus] = useState('');
+
+  const selected = addresses.find((a) => a.id === addressId) ?? null;
 
   const useMyLocation = async () => {
     setGeoStatus('loading');
@@ -261,8 +266,23 @@ function AddressStep({ addresses, addressId, onSelect, onAdded }) {
     }
   };
 
+  // Capte et attache la position GPS à une adresse déjà enregistrée sans coords.
+  const captureForSelected = async () => {
+    if (!selected) return;
+    setFixStatus('loading');
+    try {
+      const pos = await getCurrentPosition();
+      updateAddress(selected.id, { coords: pos });
+      onUpdated?.();
+      setFixStatus('ok');
+    } catch (err) {
+      setFixStatus(err.message || 'error');
+    }
+  };
+
   const save = (e) => {
     e.preventDefault();
+    if (!coords) return; // position obligatoire
     if (!label.trim() && !details.trim()) return;
     const entry = addAddress({
       label: label.trim() || 'Domicile',
@@ -280,6 +300,9 @@ function AddressStep({ addresses, addressId, onSelect, onAdded }) {
   return (
     <section className="wizard-panel">
       <h2>Adresse de livraison</h2>
+      <p className="form-hint">
+        <i className="bx bx-info-circle"></i> La position GPS est nécessaire pour vous livrer.
+      </p>
 
       {addresses.length > 0 && (
         <div className="address-list">
@@ -294,10 +317,38 @@ function AddressStep({ addresses, addressId, onSelect, onAdded }) {
               <span>
                 <strong>{a.label}</strong>
                 {a.details && <em>{a.details}</em>}
-                {a.coords && <small>Position GPS enregistrée</small>}
+                {a.coords ? (
+                  <small className="ok"><i className="bx bx-check"></i> Position GPS enregistrée</small>
+                ) : (
+                  <small className="warn"><i className="bx bx-error-circle"></i> Position GPS manquante</small>
+                )}
               </span>
             </button>
           ))}
+        </div>
+      )}
+
+      {/* Adresse sélectionnée sans position : la capter avant de continuer. */}
+      {selected && !selected.coords && (
+        <div className="geo-required">
+          <p>
+            <i className="bx bx-error-circle"></i> Position GPS requise pour livrer à «&nbsp;
+            {selected.label}&nbsp;».
+          </p>
+          <button
+            type="button"
+            className="btn btn-primary btn-block"
+            onClick={captureForSelected}
+            disabled={fixStatus === 'loading'}
+          >
+            <i className="bx bx-current-location"></i>
+            {fixStatus === 'loading' ? 'Localisation…' : 'Capter ma position'}
+          </button>
+          {fixStatus && fixStatus !== 'loading' && fixStatus !== 'ok' && (
+            <p className="form-error">
+              Impossible d'obtenir la position. Autorisez la localisation puis réessayez.
+            </p>
+          )}
         </div>
       )}
 
@@ -319,18 +370,26 @@ function AddressStep({ addresses, addressId, onSelect, onAdded }) {
             value={details}
             onChange={(e) => setDetails(e.target.value)}
           />
-          <button type="button" className="btn btn-outline btn-block" onClick={useMyLocation}>
+          <button
+            type="button"
+            className={`btn btn-block ${coords ? 'btn-outline' : 'btn-primary'}`}
+            onClick={useMyLocation}
+            disabled={geoStatus === 'loading'}
+          >
             <i className="bx bx-current-location"></i>
-            {coords ? 'Position enregistrée' : 'Utiliser ma position'}
+            {coords
+              ? 'Position enregistrée ✓'
+              : geoStatus === 'loading'
+                ? 'Localisation…'
+                : 'Utiliser ma position (obligatoire)'}
           </button>
-          {geoStatus === 'loading' && <p className="form-hint">Localisation en cours…</p>}
-          {geoStatus === 'ok' && (
-            <p className="form-hint ok">
-              <i className="bx bx-check"></i> Position GPS captée.
-            </p>
+          {geoStatus === 'ok' && coords && (
+            <p className="form-hint ok"><i className="bx bx-check"></i> Position GPS captée.</p>
           )}
           {geoStatus && geoStatus !== 'loading' && geoStatus !== 'ok' && (
-            <p className="form-error">{geoStatus}</p>
+            <p className="form-error">
+              Impossible d'obtenir la position. Autorisez la localisation puis réessayez.
+            </p>
           )}
           <div className="wizard-actions inline">
             {addresses.length > 0 && (
@@ -338,7 +397,7 @@ function AddressStep({ addresses, addressId, onSelect, onAdded }) {
                 Annuler
               </button>
             )}
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-primary" disabled={!coords}>
               Enregistrer l'adresse
             </button>
           </div>
