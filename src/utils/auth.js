@@ -40,6 +40,22 @@ export async function loginWithPassword(email, password) {
   return data;
 }
 
+// --- Connexion ADMIN (mot de passe seul) --------------------------------
+
+// L'accès au tableau de bord se fait avec un mot de passe uniquement : l'email
+// du compte admin est fixe côté code. La sécurité repose sur le mot de passe et
+// les politiques RLS (le compte a role='admin').
+export const ADMIN_EMAIL = 'thee40775@gmail.com';
+
+export async function loginAdmin(password) {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: ADMIN_EMAIL,
+    password,
+  });
+  if (error) throw error;
+  return data;
+}
+
 // --- Session / profil ---------------------------------------------------
 
 export async function getSession() {
