@@ -24,34 +24,8 @@ export async function signUpClient({ email, password, firstName, lastName, whats
   return data;
 }
 
-// Rôle d'un utilisateur (pour rediriger après connexion) : 'user' | 'admin'.
-export async function getRole(userId) {
-  const { data } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', userId)
-    .maybeSingle();
-  return data?.role ?? 'user';
-}
-
 export async function loginWithPassword(email, password) {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw error;
-  return data;
-}
-
-// --- Connexion ADMIN (mot de passe seul) --------------------------------
-
-// L'accès au tableau de bord se fait avec un mot de passe uniquement : l'email
-// du compte admin est fixe côté code. La sécurité repose sur le mot de passe et
-// les politiques RLS (le compte a role='admin').
-export const ADMIN_EMAIL = 'thee40775@gmail.com';
-
-export async function loginAdmin(password) {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: ADMIN_EMAIL,
-    password,
-  });
   if (error) throw error;
   return data;
 }

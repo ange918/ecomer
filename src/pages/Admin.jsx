@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { signOut } from '../utils/auth';
 import {
   getAllOrders,
   setOrderStatus,
@@ -73,7 +71,6 @@ function FilterNav({ counts, value, onChange, className }) {
 }
 
 function Admin() {
-  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -119,11 +116,6 @@ function Admin() {
     }
   };
 
-  const handleLogout = async () => {
-    await signOut();
-    navigate('/akonde', { replace: true });
-  };
-
   const counts = {
     all: orders.length,
     en_attente: orders.filter((o) => o.status === 'en_attente').length,
@@ -142,9 +134,6 @@ function Admin() {
           <span>GazExpress<em>Admin</em></span>
         </div>
         <FilterNav counts={counts} value={filter} onChange={setFilter} className="admin-nav" />
-        <button type="button" className="btn btn-ghost admin-logout" onClick={handleLogout}>
-          <i className="bx bx-log-out"></i> Déconnexion
-        </button>
       </aside>
 
       {/* Contenu principal */}
@@ -159,9 +148,6 @@ function Admin() {
               )}
             </h1>
           </div>
-          <button type="button" className="btn btn-ghost btn-sm admin-mobile-logout" onClick={handleLogout}>
-            <i className="bx bx-log-out"></i>
-          </button>
         </header>
 
         {/* Filtres en ligne (mobile) */}
