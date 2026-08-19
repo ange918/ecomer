@@ -16,8 +16,16 @@ function AdminLogin() {
     try {
       await loginAdmin(password);
       // Pas de setBusy(false) : le composant est démonté au rendu du tableau de bord.
-    } catch {
-      setError('Mot de passe incorrect.');
+    } catch (err) {
+      const msg = err?.message || '';
+      // Mauvais mot de passe vs autre problème (réseau, service Supabase, etc.).
+      if (/invalid login credentials/i.test(msg)) {
+        setError('Mot de passe incorrect.');
+      } else if (/failed to fetch|network|load failed/i.test(msg)) {
+        setError('Connexion au serveur impossible. Vérifiez votre réseau et réessayez.');
+      } else {
+        setError(msg || 'Connexion impossible. Réessayez dans un instant.');
+      }
       setBusy(false);
     }
   };
