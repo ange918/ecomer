@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   getBrands,
@@ -10,8 +10,18 @@ import {
 import { getAddresses, getDefaultAddress, addAddress, updateAddress } from '../utils/addresses';
 import { getCurrentPosition, estimateDistanceKm, computeDeliveryFee } from '../utils/geo';
 import { createOrder } from '../utils/orders';
+import oryxImg from '../assets/products/oryx.png';
+import progazImg from '../assets/products/progaz.png';
+import beninPetroImg from '../assets/products/benin-petro.png';
 
 const STEPS = ['Produit', 'Adresse', 'Paiement', 'Récap'];
+
+// Photo par marque (bouteille détourée).
+const BRAND_IMAGES = {
+  oryx: oryxImg,
+  progaz: progazImg,
+  'benin-petro': beninPetroImg,
+};
 
 function NewOrder() {
   const navigate = useNavigate();
@@ -29,22 +39,12 @@ function NewOrder() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const contenances = useMemo(() => getContenances(brandId), [brandId]);
   const selectedAddress = addresses.find((a) => a.id === addressId) ?? null;
 
   const productPrice = getPrice(brandId, kg, type);
   const distance = estimateDistanceKm(selectedAddress?.coords);
   const deliveryFee = computeDeliveryFee(distance);
   const total = productPrice + deliveryFee;
-
-  // Réaligner la contenance si elle n'existe pas pour la nouvelle marque.
-  const handleBrandChange = (id) => {
-    setBrandId(id);
-    const options = getContenances(id);
-    if (!options.some((c) => c.kg === kg)) {
-      setKg(options[0].kg);
-    }
-  };
 
   const canContinue =
     (step === 0 && brandId && kg && type) ||
@@ -79,57 +79,68 @@ function NewOrder() {
 
       {step === 0 && (
         <section className="wizard-panel">
-          <h2>Marque</h2>
-          <div className="brand-grid">
-            {brands.map((b) => (
-              <button
-                key={b.id}
-                type="button"
-                className={`brand-chip ${brandId === b.id ? 'active' : ''}`}
-                onClick={() => handleBrandChange(b.id)}
-              >
-                <span className="brand-dot" style={{ background: b.color }}></span>
-                {b.name}
-              </button>
-            ))}
-          </div>
-
-          <h2>Contenance</h2>
-          <div className="option-row">
-            {contenances.map((c) => (
-              <button
-                key={c.kg}
-                type="button"
-                className={`pill ${kg === c.kg ? 'active' : ''}`}
-                onClick={() => setKg(c.kg)}
-              >
-                {c.kg} kg
-              </button>
-            ))}
-          </div>
-
-          <h2>Type d'opération</h2>
-          <div className="type-cards">
+          {/* Type d'opération : ajuste les prix affichés. */}
+          <div className="type-toggle">
             <button
               type="button"
-              className={`type-card ${type === 'echange' ? 'active' : ''}`}
+              className={`type-toggle-btn ${type === 'echange' ? 'active' : ''}`}
               onClick={() => setType('echange')}
             >
               <i className="bx bx-transfer"></i>
-              <strong>Échange</strong>
-              <span>Bouteille vide reprise contre une pleine</span>
-              <em>{formatXOF(getPrice(brandId, kg, 'echange'))}</em>
+              <span>
+                <strong>Échange</strong>
+                <em>Bouteille vide → pleine</em>
+              </span>
             </button>
             <button
               type="button"
-              className={`type-card ${type === 'neuf' ? 'active' : ''}`}
+              className={`type-toggle-btn ${type === 'neuf' ? 'active' : ''}`}
               onClick={() => setType('neuf')}
             >
               <i className="bx bx-purchase-tag"></i>
-              <strong>Achat neuf</strong>
-              <span>Bouteille pleine + consigne</span>
-              <em>{formatXOF(getPrice(brandId, kg, 'neuf'))}</em>
+              <span>
+                <strong>Achat neuf</strong>
+                <em>Bouteille + consigne</em>
+              </span>
             </button>
+          </div>
+
+          {/* Catalogue par marque : photo + quantités avec prix. */}
+          <div className="brand-catalog">
+            {brands.map((b) => (
+              <article className="brand-block" key={b.id}>
+                <header className="brand-block-head">
+                  <div className="brand-block-photo">
+                    <img src={BRAND_IMAGES[b.id]} alt={b.name} />
+                  </div>
+                  <div className="brand-block-name">
+                    <span className="brand-dot" style={{ background: b.color }}></span>
+                    <strong>{b.name}</strong>
+                  </div>
+                </header>
+                <div className="qty-options">
+                  {getContenances(b.id).map((c) => {
+                    const price = type === 'neuf' ? c.neuf : c.echange;
+                    const active = brandId === b.id && kg === c.kg;
+                    return (
+                      <button
+                        key={c.kg}
+                        type="button"
+                        className={`qty-card ${active ? 'active' : ''}`}
+                        onClick={() => {
+                          setBrandId(b.id);
+                          setKg(c.kg);
+                        }}
+                      >
+                        {active && <i className="bx bx-check qty-check"></i>}
+                        <strong>{c.kg} kg</strong>
+                        <span className="qty-price">{formatXOF(price)}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </article>
+            ))}
           </div>
         </section>
       )}

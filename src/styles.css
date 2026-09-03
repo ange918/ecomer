@@ -612,91 +612,152 @@ textarea:focus {
   margin-top: 0;
 }
 
-.brand-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.brand-chip,
-.pill {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border: 1.5px solid var(--line);
-  background: var(--elev);
-  border-radius: 12px;
-  padding: 12px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--ink);
-}
-
-.brand-chip.active,
-.pill.active {
-  border-color: var(--primary);
-  background: rgba(198, 241, 53, 0.12);
-  color: var(--primary);
-}
-
 .brand-dot {
   width: 12px;
   height: 12px;
   border-radius: 50%;
 }
 
-.option-row {
-  display: flex;
+/* Étape Produit : bascule Échange / Achat neuf */
+.type-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
+  margin-bottom: 18px;
 }
 
-.option-row .pill {
-  flex: 1;
+.type-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  border: 1.5px solid var(--line);
+  background: var(--elev);
+  border-radius: 14px;
+  padding: 12px;
+  color: var(--ink);
 }
 
-.type-cards {
+.type-toggle-btn i {
+  font-size: 1.4rem;
+  color: var(--muted);
+}
+
+.type-toggle-btn span {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.type-toggle-btn strong {
+  font-size: 0.92rem;
+}
+
+.type-toggle-btn em {
+  font-style: normal;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.type-toggle-btn.active {
+  border-color: var(--primary);
+  background: rgba(198, 241, 53, 0.12);
+}
+
+.type-toggle-btn.active i {
+  color: var(--primary);
+}
+
+/* Étape Produit : catalogue par marque (photo + quantités + prix) */
+.brand-catalog {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.brand-block {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.brand-block-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.brand-block-photo {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(198, 241, 53, 0.16), transparent 70%),
+    var(--elev);
+  display: grid;
+  place-items: center;
+}
+
+.brand-block-photo img {
+  max-width: 82%;
+  max-height: 82%;
+  object-fit: contain;
+}
+
+.brand-block-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-block-name strong {
+  font-size: 1.05rem;
+}
+
+.qty-options {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
 
-.type-card {
+.qty-card {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   text-align: left;
   border: 1.5px solid var(--line);
   background: var(--elev);
-  border-radius: 14px;
-  padding: 14px;
+  border-radius: 12px;
+  padding: 12px 14px;
   color: var(--ink);
+  transition: border-color 0.12s ease, background 0.12s ease;
 }
 
-.type-card i {
-  font-size: 1.4rem;
-  color: var(--primary);
+.qty-card strong {
+  font-size: 1rem;
 }
 
-.type-card strong {
-  font-size: 0.95rem;
-}
-
-.type-card span {
-  font-size: 0.72rem;
-  color: var(--muted);
-}
-
-.type-card em {
-  font-style: normal;
+.qty-price {
   font-weight: 700;
   color: var(--primary);
-  margin-top: 4px;
+  font-size: 0.9rem;
 }
 
-.type-card.active {
+.qty-card.active {
   border-color: var(--primary);
-  background: rgba(198, 241, 53, 0.1);
+  background: rgba(198, 241, 53, 0.12);
+}
+
+.qty-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: var(--primary);
+  font-size: 1.1rem;
 }
 
 .address-list,
