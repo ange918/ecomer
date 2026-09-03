@@ -4,7 +4,6 @@ import {
   getBrands,
   getContenances,
   getPrice,
-  PAYMENT_METHODS,
   formatXOF,
 } from '../utils/catalog';
 import { getAddresses, getDefaultAddress, addAddress, updateAddress } from '../utils/addresses';
@@ -14,7 +13,9 @@ import oryxImg from '../assets/products/oryx.png';
 import progazImg from '../assets/products/progaz.png';
 import beninPetroImg from '../assets/products/benin-petro.png';
 
-const STEPS = ['Produit', 'Adresse', 'Paiement', 'Récap'];
+// Paiement à la livraison (espèces ou Mobile Money) : pas de règlement en ligne.
+const STEPS = ['Produit', 'Adresse', 'Récap'];
+const PAYMENT_ON_DELIVERY = 'livraison';
 
 // Photo par marque (bouteille détourée).
 const BRAND_IMAGES = {
@@ -35,7 +36,6 @@ function NewOrder() {
   const [addresses, setAddresses] = useState(() => getAddresses());
   const [addressId, setAddressId] = useState(() => getDefaultAddress()?.id ?? null);
 
-  const [paymentId, setPaymentId] = useState(PAYMENT_METHODS[0].id);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -49,14 +49,19 @@ function NewOrder() {
   const canContinue =
     (step === 0 && brandId && kg && type) ||
     (step === 1 && !!selectedAddress?.coords) ||
-    (step === 2 && !!paymentId) ||
-    step === 3;
+    step === 2;
 
   const handleConfirm = async () => {
     setError('');
     setSubmitting(true);
     try {
-      const order = await createOrder({ brandId, kg, type, address: selectedAddress, paymentId });
+      const order = await createOrder({
+        brandId,
+        kg,
+        type,
+        address: selectedAddress,
+        paymentId: PAYMENT_ON_DELIVERY,
+      });
       navigate(`/suivi/${order.id}`, { replace: true });
     } catch (err) {
       setError(err.message || 'Commande impossible. Réessayez.');
@@ -159,26 +164,6 @@ function NewOrder() {
       )}
 
       {step === 2 && (
-        <section className="wizard-panel">
-          <h2>Mode de paiement</h2>
-          <div className="payment-list">
-            {PAYMENT_METHODS.map((m) => (
-              <button
-                key={m.id}
-                type="button"
-                className={`payment-option ${paymentId === m.id ? 'active' : ''}`}
-                onClick={() => setPaymentId(m.id)}
-              >
-                <i className={`bx ${m.icon}`}></i>
-                <span>{m.name}</span>
-                {paymentId === m.id && <i className="bx bx-check check"></i>}
-              </button>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {step === 3 && (
         <section className="wizard-panel recap">
           <h2>Récapitulatif</h2>
           <dl className="recap-list">
@@ -198,7 +183,7 @@ function NewOrder() {
             </div>
             <div>
               <dt>Paiement</dt>
-              <dd>{PAYMENT_METHODS.find((m) => m.id === paymentId)?.name}</dd>
+              <dd>À la livraison</dd>
             </div>
           </dl>
 
@@ -216,6 +201,10 @@ function NewOrder() {
               <span>{formatXOF(total)}</span>
             </div>
           </div>
+
+          <p className="recap-pay-note">
+            <i className="bx bx-wallet"></i> Vous payez à la livraison (espèces ou Mobile Money).
+          </p>
         </section>
       )}
 
@@ -229,7 +218,7 @@ function NewOrder() {
             Retour
           </button>
         )}
-        {step < 3 ? (
+        {step < 2 ? (
           <button
             type="button"
             className="btn btn-primary"
