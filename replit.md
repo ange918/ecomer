@@ -12,7 +12,7 @@ avec React + Vite, backend **Supabase**, déployé sur **Vercel**.
 
 ### Stack
 - **Frontend :** React 19, React Router DOM 7, GSAP (landing)
-- **Build :** Vite 7 (port 5000) · **Icônes :** Boxicons · **Polices :** Montserrat / Outfit
+- **Build :** Vite 7 (port 5000) · **Icônes :** Boxicons · **Police :** Archivo
 - **Backend :** Supabase — Auth (email + mot de passe), table `orders` (RLS),
   Edge Function `admin-orders` (clé `service_role` pour le tableau de bord)
 - **Adresses** conservées en `localStorage` (`gazexpress_addresses`)
