@@ -24,7 +24,7 @@ traite (accepter → en route → livrée).
 - **React 19** + **Vite 7** + **React Router 7**
 - **Supabase** : Auth, base Postgres (table `orders`, RLS), Edge Function `admin-orders`
   (clé `service_role` côté serveur pour le tableau de bord).
-- **GSAP** (animations de la landing), **Boxicons** + **Archivo** via CDN.
+- **GSAP** (animations de la landing), **Boxicons** + **Unbounded / Inter** via CDN, **Leaflet** (carte de suivi).
 - Déploiement **Vercel** (SPA fallback via `vercel.json`).
 
 ## Architecture

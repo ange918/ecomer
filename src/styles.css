@@ -14,11 +14,11 @@
   --danger: #f87171;
   --radius: 16px;
   --shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
-  --font-head: 'Archivo', system-ui, sans-serif;
-  font-family: 'Archivo', system-ui, sans-serif;
+  --font-head: 'Unbounded', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
-/* Une seule famille grotesque « Archivo » : titres (var(--font-head)) et corps. */
+/* Titres display « Unbounded » (var(--font-head)) ; corps en « Inter » lisible. */
 h1,
 h2,
 h3 {
@@ -933,51 +933,24 @@ textarea:focus {
   box-shadow: var(--shadow);
   overflow: hidden;
   margin-bottom: 16px;
+  /* Contexte d'empilement propre : les couches internes de Leaflet restent
+     sous le header et la barre d'onglets collants (z-index 20). */
+  position: relative;
+  z-index: 0;
 }
 
+/* Conteneur de la vraie carte (Leaflet / OpenStreetMap). */
 .live-map {
   width: 100%;
-  display: block;
+  height: 260px;
   background: #0e0e10;
-  color: #26262b;
 }
 
-.route-bg {
-  stroke: #2a2a30;
-  stroke-width: 5;
-}
-
-.route-done {
-  stroke: var(--primary);
-  stroke-width: 5;
-  transition: stroke-dashoffset 0.3s linear;
-}
-
-.map-point circle {
-  fill: #141416;
-  stroke-width: 2;
-}
-
-.map-point text,
-.map-driver text {
-  font-size: 12px;
-}
-
-.map-point.depot circle {
-  stroke: var(--muted);
-}
-
-.map-point.client circle {
-  stroke: var(--primary);
-}
-
-.map-driver circle {
-  fill: var(--primary);
-  transition: transform 0.3s linear;
-}
-
-.map-driver {
-  transition: transform 0.3s linear;
+/* Marqueurs emoji (divIcon) : fond transparent, texte centré. */
+.map-emoji {
+  background: none;
+  border: none;
+  text-align: center;
 }
 
 .tracking-eta {
