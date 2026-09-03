@@ -821,6 +821,28 @@ textarea:focus {
   padding-top: 6px;
 }
 
+/* Espace entre les adresses enregistrées et le bouton « Ajouter ». */
+.address-list {
+  margin-bottom: 14px;
+}
+
+.address-option {
+  padding: 16px 14px;
+}
+
+/* Bouton « Ajouter une adresse » : distinct de la carte sélectionnée. */
+.address-add {
+  border: 1.5px dashed var(--line);
+  background: transparent;
+  color: var(--muted);
+  gap: 8px;
+}
+
+.address-add:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
 .wizard-actions {
   display: flex;
   gap: 10px;

@@ -403,7 +403,7 @@ function AddressStep({ addresses, addressId, onSelect, onAdded, onUpdated }) {
           </div>
         </form>
       ) : (
-        <button type="button" className="btn btn-outline btn-block" onClick={() => setAdding(true)}>
+        <button type="button" className="btn btn-block address-add" onClick={() => setAdding(true)}>
           <i className="bx bx-plus"></i> Ajouter une adresse
         </button>
       )}
