@@ -36,7 +36,7 @@ function App() {
         <Route path="/inscription" element={<Inscription />} />
         {/* Tableau de bord admin : URL secrète, accès libre (protégé côté
             Supabase par une Edge Function à clé privilégiée). */}
-        <Route path="/akonde-4f7q9x2k" element={<Admin />} />
+        <Route path="/akonde/akonde" element={<Admin />} />
         <Route element={<AppLayout />}>
           <Route path="/app" element={<Home />} />
           <Route path="/commander" element={<NewOrder />} />

@@ -1,62 +1,52 @@
-# GazExpress — Application Client (MVP)
+# GazExpress
 
 ## Vue d'ensemble
-Prototype front-end de l'application **Client** de GazExpress, service de livraison à domicile
-de gaz domestique. Construit avec React + Vite. **MVP mocké, sans backend** : toutes les
-données vivent dans le `localStorage`.
+Service de **livraison de gaz domestique à domicile**. L'utilisateur commande sa recharge depuis
+l'app ; un **administrateur** reçoit et traite les commandes via un tableau de bord. Construit
+avec React + Vite, backend **Supabase**, déployé sur **Vercel**.
 
-**Framework :** React 19.2 + Vite 7.2
-**État :** MVP navigable (interface Client uniquement)
-
-## Périmètre
-Seule l'interface **Client** (§3.1 du cahier des charges) est implémentée. Les apps
-Livreur/Dépôt et le back-office Admin sont hors périmètre. OTP, paiement Mobile Money et
-suivi cartographique sont simulés.
+**Framework :** React 19 + Vite 7 + React Router 7
+**Backend :** Supabase (Auth, Postgres + RLS, Edge Function)
 
 ## Architecture
 
-### Stack technique
-- **Frontend :** React 19.2, React Router DOM 7
-- **Build :** Vite 7.2 (port 5000)
-- **Icônes :** Boxicons · **Police :** Montserrat
-- **Stockage :** localStorage (`gazexpress_*`)
+### Stack
+- **Frontend :** React 19, React Router DOM 7, GSAP (landing)
+- **Build :** Vite 7 (port 5000) · **Icônes :** Boxicons · **Polices :** Montserrat / Outfit
+- **Backend :** Supabase — Auth (email + mot de passe), table `orders` (RLS),
+  Edge Function `admin-orders` (clé `service_role` pour le tableau de bord)
+- **Adresses** conservées en `localStorage` (`gazexpress_addresses`)
 
 ### Structure
 ```
 src/
-├── components/   AppNav, RequireAuth, OrderStatusStepper, LiveMap
-├── pages/        Login, Home, NewOrder, Tracking, History, Profile, Support
-├── utils/        storage, auth, catalog, geo, orders
-├── App.jsx       routing + garde d'auth
+├── components/   AppNav, RequireAuth, AuthShell, OrderStatusStepper, LiveMap
+├── pages/        Landing, Login, Inscription, Home, NewOrder, Tracking,
+│                 History, Profile, Support, Admin
+├── utils/        orders (Supabase), auth, catalog, geo, addresses, storage
+├── lib/          supabaseClient, AuthContext
+├── App.jsx       routing + gardes d'auth
 ├── main.jsx
 └── styles.css
+supabase/
+├── functions/admin-orders/   Edge Function du tableau de bord
+└── migrations/               schéma orders + RLS
 ```
 
-### Clés localStorage
-- `gazexpress_session` — session utilisateur (identifiant, nom)
-- `gazexpress_addresses` — adresses de livraison
-- `gazexpress_orders` — commandes et leur statut
-- `gazexpress_pending_otp` — code OTP en attente (mock)
-
-## Parcours Client (Annexe B)
-Connexion (OTP) → commande (marque, contenance, échange/achat, adresse + géoloc, paiement)
-→ suivi temps réel simulé → réception + notation → historique.
+## Parcours
+- **Client :** inscription / connexion → commande (marque, contenance, échange/neuf, adresse +
+  **GPS obligatoire**, paiement) → suivi temps réel → historique.
+- **Admin :** URL secrète `/akonde/akonde` (sans mot de passe) → liste des commandes, contact
+  WhatsApp, carte de localisation, changement de statut. Responsive mobile / ordinateur.
 
 ## Modèle de données
-- **catalog.js** : marques (Oryx, Puma, TotalEnergies, Sodigaz), contenances 6/12,5 kg, prix
-  en FCFA pour échange (recharge) et achat neuf (bouteille + consigne).
-- **orders.js** : cycle `en_attente → acceptee → en_route → livree`, frais de livraison
-  modulés selon la distance estimée.
-- **geo.js** : géolocalisation navigateur réelle, distance haversine, calcul des frais.
+- **catalog.js** : marques (Oryx, Progaz, Benin Petro), contenances 6 / 12,5 kg, prix FCFA
+  (échange / achat neuf).
+- **orders** (Supabase) : cycle `en_attente → acceptee → en_route → livree` (+ `annulee`),
+  frais de livraison selon la distance estimée.
+- **geo.js** : géolocalisation navigateur, distance haversine, calcul des frais.
 
 ## Développement
 - `npm run dev` — serveur (port 5000)
 - `npm run build` — build production
 - `npm run lint` — ESLint
-
-## Améliorations futures
-1. Backend + API (commandes, dépôts, livreurs)
-2. Vraie intégration Mobile Money et passerelle OTP/SMS
-3. API cartographique réelle (tuiles, itinéraire, suivi GPS livreur)
-4. Apps Livreur/Dépôt et back-office Admin
-5. Notifications push temps réel

@@ -1,61 +1,52 @@
-# GazExpress — App Client (MVP)
+# GazExpress
 
-Prototype **front-end** de l'application Client de **GazExpress**, un service de livraison
-à domicile de gaz domestique (modèle *on-demand delivery*).
+Service de **livraison de gaz domestique à domicile**. L'utilisateur commande sa recharge
+depuis l'application ; un **administrateur** reçoit les commandes dans un tableau de bord et les
+traite (accepter → en route → livrée).
 
-> **MVP mocké** : cette version ne couvre que l'interface **Client** décrite au §3.1 du
-> cahier des charges. Il n'y a **pas de backend** — toutes les données (session, adresses,
-> commandes) sont persistées dans le `localStorage` du navigateur. L'OTP, le paiement
-> Mobile Money et le suivi cartographique sont **simulés**.
+## Fonctionnalités
+
+**Application client**
+- Inscription / connexion (email + mot de passe, via Supabase Auth).
+- Commande en quelques étapes : marque, contenance, type (échange / neuf), adresse avec
+  **position GPS obligatoire**, moyen de paiement, récapitulatif.
+- Suivi de commande en temps réel (statut piloté par l'admin).
+- Historique et re-commande, gestion du profil et des adresses.
+
+**Tableau de bord administrateur**
+- Accessible via une **URL secrète** (`/akonde/akonde`), sans mot de passe.
+- Liste des commandes avec filtres par statut, contact **WhatsApp** du client, adresse +
+  **carte** de localisation, et actions de changement de statut.
+- Responsive : mobile-first sur téléphone, menu latéral + pleine largeur sur ordinateur.
 
 ## Stack
 
-- **React 19** + **Vite 7**, **React Router 7**
-- **Boxicons** + **Montserrat** via CDN
-- **ESLint 9** (flat config)
+- **React 19** + **Vite 7** + **React Router 7**
+- **Supabase** : Auth, base Postgres (table `orders`, RLS), Edge Function `admin-orders`
+  (clé `service_role` côté serveur pour le tableau de bord).
+- **GSAP** (animations de la landing), **Boxicons** + **Montserrat/Outfit** via CDN.
+- Déploiement **Vercel** (SPA fallback via `vercel.json`).
+
+## Architecture
+
+- `src/pages/` — Landing, Login, Inscription, Home, NewOrder, Tracking, History, Profile,
+  Support, Admin (tableau de bord).
+- `src/utils/` — `orders.js` (commandes via Supabase + Edge Function), `auth.js`, `catalog.js`
+  (marques/prix), `geo.js` (géolocalisation), `addresses.js` (adresses en localStorage).
+- `src/lib/` — `supabaseClient.js`, `AuthContext.jsx`.
+- `supabase/` — `functions/admin-orders/` (Edge Function) et `migrations/`.
 
 ## Démarrage
 
 ```bash
 npm install
-npm run dev      # http://localhost:5000
+npm run dev      # serveur de développement
+npm run build    # build de production
+npm run lint     # ESLint
 ```
 
-| Commande          | Description                          |
-| ----------------- | ------------------------------------ |
-| `npm run dev`     | Serveur de développement (port 5000) |
-| `npm run build`   | Build de production dans `dist/`     |
-| `npm run preview` | Prévisualisation du build            |
-| `npm run lint`    | Analyse ESLint                       |
-
-## Fonctionnalités (parcours Client)
-
-1. **Connexion** — téléphone/email + code OTP (le code est affiché à l'écran pour la démo).
-2. **Accueil** — commande en cours, raccourci « Commander », dernières recharges.
-3. **Commander** — assistant en 4 étapes : marque (Oryx, Puma, TotalEnergies, Sodigaz) et
-   contenance (6 / 12,5 kg), type d'opération (échange vs achat neuf), adresse (avec
-   géolocalisation du navigateur), mode de paiement (espèces / MTN MoMo / Moov / Wave),
-   récapitulatif avec frais de livraison calculés selon la distance.
-4. **Suivi** — carte simulée avec livreur qui se rapproche, frise de statut
-   (`en attente → acceptée → en route → livrée`), puis notation.
-5. **Historique** — commandes passées + « Recommander ».
-6. **Profil** — nom, gestion des adresses, déconnexion.
-7. **Support** — contacts (appel / WhatsApp) et FAQ.
-
-## Structure
-
-```
-src/
-├── components/   AppNav, RequireAuth, OrderStatusStepper, LiveMap
-├── pages/        Login, Home, NewOrder, Tracking, History, Profile, Support
-├── utils/        storage, auth, catalog, geo, orders  (couche données localStorage)
-├── App.jsx       routing + garde d'authentification
-├── main.jsx      point d'entrée
-└── styles.css    styles globaux (mobile-first)
-```
-
-## Hors périmètre (à intégrer ultérieurement)
-
-App Livreur/Dépôt, back-office Admin, vraie intégration Mobile Money et passerelle OTP,
-API cartographique/itinéraire réelle, notifications push serveur, conformité réglementaire
-du transport de gaz.
+### Configuration Supabase (optionnelle en dev)
+L'URL et la clé publique du projet sont câblées par défaut dans `src/lib/supabaseClient.js`
+(la clé publique est conçue pour être exposée côté navigateur, la sécurité repose sur les
+politiques RLS). On peut les surcharger via les variables d'environnement Vite
+`VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY`.
