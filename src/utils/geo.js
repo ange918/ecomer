@@ -4,7 +4,7 @@
 
 // Position simulée d'un dépôt partenaire de référence (utilisée pour estimer
 // la distance quand le client a partagé sa position GPS).
-const DEPOT_REFERENCE = { lat: 5.348, lng: -4.008 }; // Abidjan (exemple)
+export const DEPOT_REFERENCE = { lat: 5.348, lng: -4.008 }; // Abidjan (exemple)
 
 const BASE_FEE = 500; // frais de base en FCFA
 const FEE_PER_KM = 150; // coût par km

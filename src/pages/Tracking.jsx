@@ -9,6 +9,7 @@ import {
 } from '../utils/orders';
 import OrderStatusStepper from '../components/OrderStatusStepper';
 import LiveMap from '../components/LiveMap';
+import { DEPOT_REFERENCE } from '../utils/geo';
 
 // Progression de la carte dérivée du statut réel (fixé par l'admin).
 const STATUS_PROGRESS = {
@@ -89,7 +90,11 @@ function Tracking() {
       ) : (
         <>
           <div className="tracking-map-card">
-            <LiveMap progress={progress} />
+            <LiveMap
+              progress={progress}
+              client={order.address?.coords}
+              depot={DEPOT_REFERENCE}
+            />
             <div className="tracking-eta">
               {delivered ? (
                 <>
