@@ -883,6 +883,24 @@ textarea:focus {
   margin-top: 4px;
 }
 
+.recap-pay-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(198, 241, 53, 0.1);
+  border: 1px solid rgba(198, 241, 53, 0.4);
+  color: var(--ink);
+  font-size: 0.86rem;
+}
+
+.recap-pay-note i {
+  color: var(--primary);
+  font-size: 1.2rem;
+}
+
 /* ---------- Tracking ---------- */
 
 .tracking-map-card {

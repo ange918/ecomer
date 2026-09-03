@@ -52,7 +52,10 @@ export function getPrice(brandId, kg, type) {
   return type === 'neuf' ? contenance.neuf : contenance.echange;
 }
 
+// Le règlement se fait à la livraison (espèces ou Mobile Money) : pas de
+// paiement en ligne. `livraison` est la valeur enregistrée sur les commandes.
 export const PAYMENT_METHODS = [
+  { id: 'livraison', name: 'À la livraison', icon: 'bx-wallet' },
   { id: 'cash', name: 'Espèces à la livraison', icon: 'bx-money' },
   { id: 'mtn', name: 'MTN MoMo', icon: 'bx-mobile-alt' },
   { id: 'moov', name: 'Moov Money', icon: 'bx-mobile-alt' },
