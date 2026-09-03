@@ -57,12 +57,6 @@ const FEATURES = [
   { icon: 'bx-refresh', title: 'Échange simplifié', text: 'Bouteille vide reprise contre une pleine, sans effort.' },
 ];
 
-const TESTIMONIALS = [
-  { name: 'Aïcha K.', role: 'Cliente, Cocody', text: 'Panne de gaz un dimanche soir : commande passée, livrée en 30 min. Un vrai soulagement !' },
-  { name: 'Koffi A.', role: 'Client, Plateau', text: 'Je commande en deux minutes et je suis livré au bureau. Plus besoin de m’organiser à l’avance.' },
-  { name: 'Fatou S.', role: 'Cliente, Yopougon', text: 'Plus besoin de porter la bouteille sous la pluie. Je recommande en deux clics.' },
-];
-
 const FAQ = [
   { q: 'Comment fonctionne la livraison ?', a: 'Vous commandez depuis l’application, nous préparons votre bouteille et un livreur vous l’apporte à domicile. Vous suivez la livraison en temps réel.' },
   { q: 'Quels moyens de paiement sont acceptés ?', a: 'Le paiement Mobile Money (MTN MoMo, Moov Money, Wave) ou en espèces à la livraison.' },
@@ -384,30 +378,6 @@ function Landing() {
         </div>
       </section>
 
-      {/* Témoignages */}
-      <section className="lp-section lp-alt">
-        <div className="lp-container lp-reveal">
-          <div className="lp-section-head">
-            <span className="lp-eyebrow">Ils nous font confiance</span>
-            <h2>Des clients satisfaits</h2>
-          </div>
-          <div className="lp-testimonials">
-            {TESTIMONIALS.map((t) => (
-              <figure className="lp-testimonial" key={t.name}>
-                <div className="lp-stars">
-                  {[1, 2, 3, 4, 5].map((n) => <i className="bx bxs-star" key={n}></i>)}
-                </div>
-                <blockquote>{t.text}</blockquote>
-                <figcaption>
-                  <strong>{t.name}</strong>
-                  <span>{t.role}</span>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* FAQ */}
       <section className="lp-section" id="faq">
         <div className="lp-container lp-faq-container lp-reveal">
@@ -467,8 +437,8 @@ function Landing() {
             </div>
             <div>
               <h4>Support</h4>
-              <a href="tel:+2250700000000">Nous appeler</a>
-              <a href="https://wa.me/2250700000000" target="_blank" rel="noreferrer">WhatsApp</a>
+              <a href="tel:+2290100000000">Nous appeler</a>
+              <a href="https://wa.me/2290100000000" target="_blank" rel="noreferrer">WhatsApp</a>
             </div>
           </div>
         </div>

@@ -22,7 +22,7 @@ function Support() {
       <h1 className="page-title">Aide & support</h1>
 
       <div className="support-actions">
-        <a href="tel:+2250700000000" className="support-btn">
+        <a href="tel:+2290100000000" className="support-btn">
           <i className="bx bx-phone-call"></i>
           <span>
             <strong>Appeler le support</strong>
@@ -30,7 +30,7 @@ function Support() {
           </span>
         </a>
         <a
-          href="https://wa.me/2250700000000"
+          href="https://wa.me/2290100000000"
           target="_blank"
           rel="noreferrer"
           className="support-btn"
